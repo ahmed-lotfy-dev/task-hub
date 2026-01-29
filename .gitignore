@@ -1,0 +1,8 @@
+.agent
+docs
+/node_modules
+.env
+.env.dev
+.env.test
+.env.prod
+.env.example
