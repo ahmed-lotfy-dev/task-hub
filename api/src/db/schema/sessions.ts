@@ -1,11 +1,11 @@
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
-import { authUsers } from './auth_users';
+import { users } from './users';
 
 export const sessions = pgTable('sessions', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => authUsers.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   token: text('token').notNull().unique(),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   ipAddress: text('ip_address'),
