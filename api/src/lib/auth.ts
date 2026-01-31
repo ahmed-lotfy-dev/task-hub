@@ -15,6 +15,7 @@ export const auth = betterAuth({
   }),
 
   secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET!,
+  baseURL: process.env.BETTER_AUTH_URL,
 
   socialProviders: {
     // github: {
@@ -40,10 +41,29 @@ export const auth = betterAuth({
     "http://localhost:3000",
     "http://web.ahmedlotfy.site",
     "https://web.ahmedlotfy.site",
-    "https://app.ahmedlotfy.site",
     "https://api.ahmedlotfy.site",
   ],
   logger: {
     level: "debug",
+  },
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+      },
+    },
+  },
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: ".ahmedlotfy.site",
+    },
+    useSecureCookies: true,
+    trustedProxyHeaders: true,
+  },
+  account: {
+    skipStateCookieCheck: true,
   },
 });

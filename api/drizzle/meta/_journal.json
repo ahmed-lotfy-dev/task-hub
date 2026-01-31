@@ -15,6 +15,13 @@
       "when": 1769859163480,
       "tag": "0001_daffy_saracen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769869457470,
+      "tag": "0002_add_role_to_users",
+      "breakpoints": true
     }
   ]
 }
