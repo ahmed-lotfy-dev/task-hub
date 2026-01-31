@@ -2,10 +2,8 @@ import { Elysia, t } from "elysia";
 import { db } from "../db/db";
 import { workspaces, workspaceMembers } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-import { apiInstance } from "../lib/api-instance";
 
 export const workspaceRoutes = new Elysia({ prefix: "/workspaces" })
-  .use(apiInstance)
   .get("/", async ({ user }: any) => {
     const userWorkspaces = await db
       .select({

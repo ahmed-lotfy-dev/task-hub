@@ -2,10 +2,8 @@ import { Elysia, t } from "elysia";
 import { db } from "../db/db";
 import { boards, workspaces } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-import { apiInstance } from "../lib/api-instance";
 
 export const boardRoutes = new Elysia({ prefix: "/boards" })
-  .use(apiInstance)
   .get("/", async ({ user, query }: any) => {
     const { workspaceId } = query;
     const where = workspaceId
