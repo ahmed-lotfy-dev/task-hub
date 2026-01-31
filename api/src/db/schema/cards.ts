@@ -44,7 +44,7 @@ export const cardAssignees = pgTable(
     cardId: uuid('card_id')
       .notNull()
       .references(() => cards.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
@@ -78,7 +78,7 @@ export const cardComments = pgTable(
     cardId: uuid('card_id')
       .notNull()
       .references(() => cards.id, { onDelete: 'cascade' }),
-    userId: uuid('user_id')
+    userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     content: text('content').notNull(),
@@ -104,7 +104,7 @@ export const cardAttachments = pgTable(
     type: attachmentTypeEnum('type').notNull(),
     size: integer('size'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    createdBy: uuid('created_by')
+    createdBy: text('created_by')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
@@ -139,7 +139,7 @@ export const checklistItems = pgTable(
     content: varchar('content', { length: 500 }).notNull(),
     completed: boolean('completed').notNull().default(false),
     position: integer('position').notNull(),
-    assignedTo: uuid('assigned_to').references(() => users.id, { onDelete: 'set null' }),
+    assignedTo: text('assigned_to').references(() => users.id, { onDelete: 'set null' }),
     dueDate: timestamp('due_date', { withTimezone: true }),
     completedAt: timestamp('completed_at', { withTimezone: true }),
   },

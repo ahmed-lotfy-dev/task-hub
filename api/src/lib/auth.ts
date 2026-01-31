@@ -13,9 +13,9 @@ export const auth = betterAuth({
       verification: verifications
     }
   }),
-  
-  secret: process.env.AUTH_SECRET!,
-  
+
+  secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET!,
+
   socialProviders: {
     // github: {
     //   clientId: process.env.GITHUB_CLIENT_ID!,
@@ -26,15 +26,24 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
-  
+
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
   },
-  
+
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
   },
-  allowedOrigins: ["http://localhost:3000","http://web.ahmedlotfy.site"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://web.ahmedlotfy.site",
+    "https://web.ahmedlotfy.site",
+    "https://app.ahmedlotfy.site",
+    "https://api.ahmedlotfy.site",
+  ],
+  logger: {
+    level: "debug",
+  },
 });

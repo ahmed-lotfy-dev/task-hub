@@ -11,7 +11,7 @@ export const workspaces = pgTable(
     slug: varchar('slug', { length: 100 }).notNull(),
     description: text('description'),
     visibility: workspaceVisibilityEnum('visibility').notNull().default('private'),
-    ownerId: uuid('owner_id')
+    ownerId: text('owner_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     settings: jsonb('settings')
