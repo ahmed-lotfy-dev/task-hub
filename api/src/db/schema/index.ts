@@ -2,6 +2,7 @@
 export * from './users';
 export * from './workspaces';
 export * from './workspace_members';
+export * from './activities';
 export * from './boards';
 export * from './lists';
 export * from './cards';
