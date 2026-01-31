@@ -39,9 +39,11 @@ export const auth = betterAuth({
   },
   trustedOrigins: [
     "http://localhost:3000",
+    "http://localhost:5173",
     "http://web.ahmedlotfy.site",
     "https://web.ahmedlotfy.site",
     "https://api.ahmedlotfy.site",
+    "https://ahmedlotfy.site",
   ],
   logger: {
     level: "debug",
@@ -57,10 +59,10 @@ export const auth = betterAuth({
   },
   advanced: {
     crossSubDomainCookies: {
-      enabled: true,
+      enabled: process.env.NODE_ENV === "production",
       domain: ".ahmedlotfy.site",
     },
-    useSecureCookies: true,
+    useSecureCookies: process.env.NODE_ENV === "production" || process.env.BETTER_AUTH_URL?.startsWith("https://"),
     trustedProxyHeaders: true,
   },
   account: {
