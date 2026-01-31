@@ -3,7 +3,7 @@ import { inferAdditionalFields } from "better-auth/client/plugins";
 
 // Get the API URL from environment or default to localhost
 // Get the API URL from environment
-const baseURL = process.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+const baseURL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
 export const authClient = createAuthClient({
   baseURL,
