@@ -7,6 +7,9 @@ import Link from "next/link";
 
 import { Suspense } from "react";
 
+import { Card } from "@/components/reusable/card";
+import { Button } from "@/components/reusable/button";
+
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +19,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const returnUrl = searchParams.get("returnUrl") || "/";
+  const returnUrl = searchParams.get("returnUrl") || "/home"; // Default to home
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,23 +56,23 @@ function LoginForm() {
   };
 
   return (
-    <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-      <div>
-        <h2 className="text-3xl font-bold text-center">Sign in</h2>
-        <p className="mt-2 text-center text-gray-600">
-          Welcome back to Task Deck
+    <Card className="max-w-md w-full p-10 flex flex-col gap-8">
+      <div className="text-center flex flex-col gap-2">
+        <h2 className="text-3xl font-extrabold text-[#2D3748] tracking-tight">Welcome Back</h2>
+        <p className="text-muted-foreground font-medium">
+          Sign in to your Task Hub account
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-500 p-3 rounded text-sm">
+        <div className="bg-red-50 text-red-500 p-4 rounded-2xl text-sm font-semibold border border-red-100 animate-in fade-in slide-in-from-top-1">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="email" className="text-sm font-bold text-muted-foreground uppercase tracking-widest px-2">
             Email address
           </label>
           <input
@@ -78,13 +81,13 @@ function LoginForm() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-5 py-4 rounded-2xl bg-[#F8FAFC] shadow-[inset_4px_4px_8px_rgba(0,0,0,0.05)] border border-white/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             placeholder="you@example.com"
           />
         </div>
 
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="password" className="text-sm font-bold text-muted-foreground uppercase tracking-widest px-2">
             Password
           </label>
           <input
@@ -93,43 +96,42 @@ function LoginForm() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-5 py-4 rounded-2xl bg-[#F8FAFC] shadow-[inset_4px_4px_8px_rgba(0,0,0,0.05)] border border-white/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             placeholder="••••••••"
           />
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-end px-2">
           <Link
             href="/forgot-password"
-            className="text-sm text-blue-600 hover:text-blue-500"
+            className="text-sm font-bold text-primary hover:translate-x-1 transition-transform"
           >
             Forgot password?
           </Link>
         </div>
 
-        <button
+        <Button
           type="submit"
           disabled={isLoading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          size="lg"
+          className="w-full"
         >
           {isLoading ? "Signing in..." : "Sign in"}
-        </button>
+        </Button>
       </form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with</span>
-        </div>
+      <div className="relative flex items-center gap-4">
+        <div className="flex-1 h-px bg-zinc-100" />
+        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Or</span>
+        <div className="flex-1 h-px bg-zinc-100" />
       </div>
 
-      <button
+      <Button
         onClick={handleGoogleSignIn}
-        className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        variant="white"
+        className="w-full border-2 border-zinc-50"
       >
-        <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
           <path
             fill="currentColor"
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -147,22 +149,22 @@ function LoginForm() {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        Google
-      </button>
+        Continue with Google
+      </Button>
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm font-medium text-muted-foreground">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="text-blue-600 hover:text-blue-500">
+        <Link href="/signup" className="text-primary font-bold hover:underline">
           Sign up
         </Link>
       </p>
-    </div>
-  )
+    </Card>
+  );
 }
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
       <Suspense fallback={<div>Loading...</div>}>
         <LoginForm />
       </Suspense>
