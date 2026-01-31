@@ -6,7 +6,7 @@ import { betterAuth } from "./middleware/authMiddleware";
 const app = new Elysia()
   .use(openapi({scalar: true, documentation: {info: {title: "Task Deck API", version: "1.0.0"}},path: "/docs"}))
   .use(cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000","http://web.ahmedlotfy.site"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
