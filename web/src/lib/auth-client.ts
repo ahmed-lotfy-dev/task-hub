@@ -16,5 +16,6 @@ export const authClient = createAuthClient({
   ],
 });
 
-// Export typed hooks for convenience
+// Export typed hooks and fetcher for convenience
 export const { useSession, signIn, signOut, signUp } = authClient;
+export const $fetch = authClient.$fetch;

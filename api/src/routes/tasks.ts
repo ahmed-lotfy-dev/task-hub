@@ -2,8 +2,10 @@ import { Elysia, t } from "elysia";
 import { db } from "../db/db";
 import { cards, lists } from "../db/schema";
 import { eq, and } from "drizzle-orm";
+import { apiInstance } from "../lib/api-instance";
 
 export const taskRoutes = new Elysia({ prefix: "/tasks" })
+  .use(apiInstance)
   .get("/", async ({ query }: any) => {
     const { boardId } = query;
     return await db.select().from(cards).where(boardId ? eq(cards.boardId, boardId) : undefined);
