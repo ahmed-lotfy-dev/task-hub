@@ -2,9 +2,11 @@ import { Elysia, t } from "elysia";
 import { db } from "../db/db";
 import { workspaces, workspaceMembers } from "../db/schema";
 import { eq, and } from "drizzle-orm";
-import { betterAuth } from "../middleware/authMiddleware";
-import { Workspace, WorkspaceSettings } from "@taskflow/shared";
+import { Workspace, WorkspaceSettings, User } from "@taskflow/shared";
 import type { Workspace as DBWorkspace } from "../db/schema/workspaces";
+import { betterAuth } from "../middleware/auth-middleware";
+import { logActivity } from "../lib/activity-logger";
+import { ensureUserOnboarding } from "../lib/provisioning";
 
 function mapWorkspace(w: DBWorkspace): Workspace {
   return {
@@ -18,7 +20,12 @@ function mapWorkspace(w: DBWorkspace): Workspace {
 
 export const workspaceRoutes = new Elysia({ prefix: "/workspaces" })
   .use(betterAuth)
-  .get("/", async ({ user }) => {
+  .get("/", async (context: any) => {
+    const user = context.user as User;
+
+    // Auto-provision if needed
+    await ensureUserOnboarding(user.id);
+
     const userWorkspaces = await db
       .select({
         workspace: workspaces,
@@ -31,7 +38,9 @@ export const workspaceRoutes = new Elysia({ prefix: "/workspaces" })
   }, {
     auth: true
   })
-  .post("/", async ({ body, user }) => {
+  .post("/", async (context: any) => {
+    const user = context.user as User;
+    const body = context.body;
     const { name, description, visibility } = body;
     const slug = name.toLowerCase().replace(/ /g, "-");
 
@@ -48,6 +57,15 @@ export const workspaceRoutes = new Elysia({ prefix: "/workspaces" })
         workspaceId: workspace.id,
         userId: user!.id,
         role: "admin",
+      });
+
+      await logActivity({
+        userId: user.id,
+        workspaceId: workspace.id,
+        action: 'create',
+        entityType: 'workspace',
+        entityId: workspace.id,
+        entityName: workspace.name,
       });
 
       return mapWorkspace(workspace);
