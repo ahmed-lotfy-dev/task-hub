@@ -9,10 +9,15 @@ import { taskRoutes } from "./routes/tasks";
 const app = new Elysia()
   .use(openapi({ scalar: true, documentation: { info: { title: "Task Deck API", version: "1.0.0" } }, path: "/docs" }))
   .use(cors({
-    origin: ["http://localhost:3000", "http://web.ahmedlotfy.site", "https://api.ahmedlotfy.site", "https://web.ahmedlotfy.site"],
+    origin: (request) => {
+      const origin = request.headers.get("origin");
+      if (!origin) return false;
+      const url = new URL(origin);
+      return url.hostname === "localhost" || url.hostname.endsWith(".ahmedlotfy.site");
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   }))
   .use(betterAuth)
   .group("/api", (app) =>
