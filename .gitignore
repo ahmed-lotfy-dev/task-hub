@@ -5,5 +5,3 @@
 .env.test
 .env.prod
 .env.example
-.agent
-docs
