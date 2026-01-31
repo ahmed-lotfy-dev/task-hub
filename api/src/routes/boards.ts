@@ -4,7 +4,7 @@ import { boards, workspaces } from "../db/schema";
 import { eq, and } from "drizzle-orm";
 
 export const boardRoutes = new Elysia({ prefix: "/boards" })
-  .get("/", async ({ user, query }: any) => {
+  .get("/", async ({ query }: any) => {
     const { workspaceId } = query;
     const where = workspaceId
       ? eq(boards.workspaceId, workspaceId)

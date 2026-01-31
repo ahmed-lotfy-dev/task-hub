@@ -14,8 +14,6 @@ export const workspaceRoutes = new Elysia({ prefix: "/workspaces" })
       .where(eq(workspaceMembers.userId, user.id));
 
     return userWorkspaces.map(w => w.workspace);
-  }, {
-    auth: true
   })
   .post("/", async ({ body, user }: any) => {
     const { name, description, visibility } = body;
