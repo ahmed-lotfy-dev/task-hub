@@ -1,5 +1,6 @@
 // Types
 export * from './types/user';
+export * from './types/auth';
 export * from './types/workspace';
 export * from './types/board';
 export * from './types/list';

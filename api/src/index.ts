@@ -7,12 +7,15 @@ import { boardRoutes } from "./routes/boards";
 import { listRoutes } from "./routes/lists";
 import { taskRoutes } from "./routes/tasks";
 import { activityRoutes } from "./routes/activities";
+import { apiKeyRoutes } from "./routes/api-keys";
 import { betterAuth } from "./middleware/auth-middleware";
+import { mcpServer } from "./mcp";
 
 const app = new Elysia()
   .use(openapi({ scalar: true, documentation: { info: { title: "Task Deck API", version: "1.0.0" } }, path: "/docs" }))
+  .use(mcpServer)
   .use(cors({
-    origin: ["http://localhost:3000", "https://web.ahmedlotfy.site"],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
@@ -25,6 +28,7 @@ const app = new Elysia()
       .use(listRoutes)
       .use(taskRoutes)
       .use(activityRoutes)
+      .use(apiKeyRoutes)
   )
   .get("/", () => "Hello From Elysia")
   .get("/health", () => ({ status: "ok" }))

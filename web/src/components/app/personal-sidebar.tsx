@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, Inbox, CheckCircle2, LogOut } from "lucide-react";
+import { Home, Inbox, CheckCircle2, Settings, History, LogOut } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,8 @@ export function PersonalSidebar() {
     { name: "Home", href: "/home", icon: Home },
     { name: "Inbox", href: "/inbox", icon: Inbox },
     { name: "My Tasks", href: "/tasks", icon: CheckCircle2 },
+    { name: "Activity", href: "/activity", icon: History },
+    { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   return (

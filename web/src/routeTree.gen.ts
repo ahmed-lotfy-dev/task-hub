@@ -15,10 +15,12 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated.workspace'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedPersonalRouteImport } from './routes/_authenticated.personal'
 import { Route as AuthenticatedInboxRouteImport } from './routes/_authenticated.inbox'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.home'
 import { Route as AuthenticatedBoardsRouteImport } from './routes/_authenticated.boards'
+import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated.activity'
 import { Route as AuthenticatedWorkspaceSlugRouteImport } from './routes/_authenticated.workspace.$slug'
 
 const SignupRoute = SignupRouteImport.update({
@@ -50,6 +52,11 @@ const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedPersonalRoute = AuthenticatedPersonalRouteImport.update({
   id: '/personal',
   path: '/personal',
@@ -70,6 +77,11 @@ const AuthenticatedBoardsRoute = AuthenticatedBoardsRouteImport.update({
   path: '/boards',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedWorkspaceSlugRoute =
   AuthenticatedWorkspaceSlugRouteImport.update({
     id: '/$slug',
@@ -81,10 +93,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/activity': typeof AuthenticatedActivityRoute
   '/boards': typeof AuthenticatedBoardsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/inbox': typeof AuthenticatedInboxRoute
   '/personal': typeof AuthenticatedPersonalRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/workspace/$slug': typeof AuthenticatedWorkspaceSlugRoute
@@ -93,10 +107,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/activity': typeof AuthenticatedActivityRoute
   '/boards': typeof AuthenticatedBoardsRoute
   '/home': typeof AuthenticatedHomeRoute
   '/inbox': typeof AuthenticatedInboxRoute
   '/personal': typeof AuthenticatedPersonalRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/workspace/$slug': typeof AuthenticatedWorkspaceSlugRoute
@@ -107,10 +123,12 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_authenticated/activity': typeof AuthenticatedActivityRoute
   '/_authenticated/boards': typeof AuthenticatedBoardsRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/inbox': typeof AuthenticatedInboxRoute
   '/_authenticated/personal': typeof AuthenticatedPersonalRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
   '/_authenticated/workspace/$slug': typeof AuthenticatedWorkspaceSlugRoute
@@ -121,10 +139,12 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/activity'
     | '/boards'
     | '/home'
     | '/inbox'
     | '/personal'
+    | '/settings'
     | '/tasks'
     | '/workspace'
     | '/workspace/$slug'
@@ -133,10 +153,12 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/activity'
     | '/boards'
     | '/home'
     | '/inbox'
     | '/personal'
+    | '/settings'
     | '/tasks'
     | '/workspace'
     | '/workspace/$slug'
@@ -146,10 +168,12 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/signup'
+    | '/_authenticated/activity'
     | '/_authenticated/boards'
     | '/_authenticated/home'
     | '/_authenticated/inbox'
     | '/_authenticated/personal'
+    | '/_authenticated/settings'
     | '/_authenticated/tasks'
     | '/_authenticated/workspace'
     | '/_authenticated/workspace/$slug'
@@ -206,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/personal': {
       id: '/_authenticated/personal'
       path: '/personal'
@@ -234,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBoardsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/activity': {
+      id: '/_authenticated/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof AuthenticatedActivityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/workspace/$slug': {
       id: '/_authenticated/workspace/$slug'
       path: '/$slug'
@@ -259,19 +297,23 @@ const AuthenticatedWorkspaceRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
   AuthenticatedBoardsRoute: typeof AuthenticatedBoardsRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedInboxRoute: typeof AuthenticatedInboxRoute
   AuthenticatedPersonalRoute: typeof AuthenticatedPersonalRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedActivityRoute: AuthenticatedActivityRoute,
   AuthenticatedBoardsRoute: AuthenticatedBoardsRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedInboxRoute: AuthenticatedInboxRoute,
   AuthenticatedPersonalRoute: AuthenticatedPersonalRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
 }
