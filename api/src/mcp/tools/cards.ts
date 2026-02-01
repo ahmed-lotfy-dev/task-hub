@@ -1,6 +1,6 @@
 import { db } from "../../db/db";
 import { cards, lists } from "../../db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logActivity } from "../../lib/activity-logger";
