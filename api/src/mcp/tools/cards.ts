@@ -1,6 +1,6 @@
 import { db } from "../../db/db";
 import { cards, lists } from "../../db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, asc } from "drizzle-orm";
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logActivity } from "../../lib/activity-logger";
@@ -38,7 +38,7 @@ export const registerCardTools = (server: McpServer) => {
         .select()
         .from(lists)
         .where(eq(lists.boardId, boardId as any))
-        .orderBy(lists.position);
+        .orderBy(asc(lists.position));
 
       return {
         content: [
