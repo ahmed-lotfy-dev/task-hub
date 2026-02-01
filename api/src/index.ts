@@ -13,7 +13,6 @@ import { mcpServer } from "./mcp";
 
 const app = new Elysia()
   .use(openapi({ scalar: true, documentation: { info: { title: "Task Deck API", version: "1.0.0" } }, path: "/docs" }))
-  .use(mcpServer)
   .use(cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],

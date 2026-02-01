@@ -36,7 +36,6 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
           return { response: new Response("Unauthorized: Invalid API Key", { status: 401 }) };
         }
 
-        // Update last used at
         await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.key, hashedKey));
 
         return {
@@ -53,4 +52,3 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
       }
     })
   );
-

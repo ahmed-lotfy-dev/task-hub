@@ -97,4 +97,3 @@ export const registerBoardTools = (server: McpServer) => {
     }
   );
 };
-

@@ -67,6 +67,47 @@ Path: `%APPDATA%\Claude\claude_desktop_config.json` or `~/Library/Application Su
 }
 ```
 
+```
+
+---
+
+## 🤖 AI Agent Workflow (سير عمل الوكيل الذكي)
+
+When connecting to TaskHub via MCP, AI agents should follow this workflow:
+
+### 1. Get Your User ID
+**First**, call the `whoami` tool to discover `userId`:
+```json
+{
+  "tool": "whoami",
+  "parameters": {
+    "userId": "USER_ID_FROM_API_KEY"
+  }
+}
+```
+
+**Response**:
+```json
+{
+  "userId": "clxy1234...",
+  "name": "Ahmed Lotfy",
+  "email": "user@example.com",
+  "message": "Use this userId in subsequent tool calls"
+}
+```
+
+### 2. Use userId in Other Tools
+Pass the returned `userId` when creating workspaces, boards, or tasks:
+```json
+{
+  "tool": "create_workspace",
+  "parameters": {
+    "userId": "clxy1234...",
+    "name": "Engineering Team"
+  }
+}
+```
+
 ---
 
 ## 🔐 Security Best Practices (أفضل الممارسات الأمنية)

@@ -6,7 +6,6 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logActivity } from "../../lib/activity-logger";
 
 export const registerCardTools = (server: McpServer) => {
-  // Get all cards (tasks) for a specific board
   server.tool(
     "get_board_tasks",
     {
@@ -29,7 +28,6 @@ export const registerCardTools = (server: McpServer) => {
     }
   );
 
-  // List all lists for a board (to find destination list for new tasks)
   server.tool(
     "list_board_lists",
     {
@@ -53,7 +51,6 @@ export const registerCardTools = (server: McpServer) => {
     }
   );
 
-  // Create a new task (card)
   server.tool(
     "create_task",
     {
@@ -66,7 +63,6 @@ export const registerCardTools = (server: McpServer) => {
       priority: z.enum(['low', 'medium', 'high']).optional().describe("The task priority")
     },
     async ({ userId, workspaceId, boardId, listId, title, description, priority }) => {
-      // Get highest position to append to end
       const lastCard = await db
         .select({ position: cards.position })
         .from(cards)
