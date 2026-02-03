@@ -57,10 +57,10 @@ function SettingsPage() {
           </aside>
 
           {/* Settings Content - WIDE LAYOUT */}
-          <main className="flex-1 min-h-[600px]">
+          <main className="flex-1 min-h-[500px]">
             {activeTab === "api" && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
-                <APIKeyManager />
+                <APIKeyManager showInfo={false} />
               </div>
             )}
 
@@ -77,6 +77,15 @@ function SettingsPage() {
             )}
           </main>
         </div>
+
+        {/* Full-width AI Bridge Section at the bottom */}
+        {activeTab === "api" && (
+          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 fill-mode-both">
+            <div className="mt-12 pt-12 border-t border-zinc-200">
+              <APIKeyManager infoOnly showHeader={false} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

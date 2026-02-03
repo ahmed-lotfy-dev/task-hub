@@ -2,20 +2,32 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { ApiKeyHeader } from "./api-key-manager/api-key-header";
 import { ApiKeySuccessCard } from "./api-key-manager/api-key-success-card";
 import { ApiKeyList } from "./api-key-manager/api-key-list";
 import { ApiKeyInfoCards } from "./api-key-manager/api-key-info-cards";
 import { ApiKey, CreateApiKeyResponse } from "@taskflow/shared";
 
-export function APIKeyManager() {
+interface APIKeyManagerProps {
+  showInfo?: boolean;
+  showHeader?: boolean;
+  infoOnly?: boolean;
+}
+
+export function APIKeyManager({ showInfo = true, showHeader = true, infoOnly = false }: APIKeyManagerProps) {
   const queryClient = useQueryClient();
   const [newKeyName, setNewKeyName] = useState("");
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
 
   const { data: keys, isLoading } = useQuery({
     queryKey: ["api-keys"],
-    queryFn: () => apiFetch<ApiKey[]>("/api/api-keys"),
+    queryFn: async () => {
+      const data = await apiFetch<ApiKey[]>("/api/api-keys");
+      console.log("[Settings] Loaded API keys:", data);
+      return data;
+    },
+    enabled: !infoOnly,
   });
 
   const createMutation = useMutation({
@@ -59,14 +71,20 @@ export function APIKeyManager() {
     setGeneratedKey(null);
   };
 
+  if (infoOnly) {
+    return <ApiKeyInfoCards onCopy={copyToClipboard} generatedKey={generatedKey} />;
+  }
+
   return (
     <div className="space-y-8">
-      <ApiKeyHeader
-        newKeyName={newKeyName}
-        setNewKeyName={setNewKeyName}
-        isPending={createMutation.isPending}
-        onGenerate={handleGenerate}
-      />
+      {showHeader && (
+        <ApiKeyHeader
+          newKeyName={newKeyName}
+          setNewKeyName={setNewKeyName}
+          isPending={createMutation.isPending}
+          onGenerate={handleGenerate}
+        />
+      )}
 
       {generatedKey && (
         <ApiKeySuccessCard
@@ -76,12 +94,12 @@ export function APIKeyManager() {
         />
       )}
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
+      <div className={cn("grid gap-8", showInfo ? "lg:grid-cols-3" : "grid-cols-1")}>
+        <div className={cn("space-y-4", showInfo ? "lg:col-span-2" : "col-span-1")}>
           <ApiKeyList keys={keys} isLoading={isLoading} onRevoke={handleRevoke} />
         </div>
 
-        <ApiKeyInfoCards onCopy={copyToClipboard} generatedKey={generatedKey} />
+        {showInfo && <ApiKeyInfoCards onCopy={copyToClipboard} generatedKey={generatedKey} />}
       </div>
     </div>
   );
