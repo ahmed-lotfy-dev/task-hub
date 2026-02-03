@@ -30,6 +30,7 @@ WORKDIR /app/web
 
 ARG API_URL=http://api:8000
 ENV VITE_API_URL=${API_URL}
+ENV NODE_ENV=production
 
 RUN bun run build
 
