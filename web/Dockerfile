@@ -29,7 +29,7 @@ ARG API_URL=http://api:8000
 ENV VITE_API_URL=${API_URL}
 ENV NODE_ENV=production
 
-RUN bun run build
+RUN bun run build && ls -la .output && ls -la dist
 
 # Stage 3: Production
 FROM oven/bun:1-alpine AS runner
@@ -41,8 +41,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/web/node_modules ./web/node_modules
 COPY --from=deps /app/packages/shared ./packages/shared
 
-# TanStack Start produces production output in .output/
+# Copy the entire build output to be safe
 COPY --from=builder /app/web/.output ./web/.output
+# Also copy package.json for potential runtime scripts
 COPY --from=builder /app/web/package.json ./web/package.json
 
 EXPOSE 3000
@@ -50,4 +51,5 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 WORKDIR /app/web
+# Standard Nitro entrypoint
 CMD ["bun", "run", ".output/server/index.mjs"]
