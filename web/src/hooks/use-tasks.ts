@@ -2,13 +2,18 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { Card as Task } from "@taskflow/shared";
 
+export type TaskWithComments = Task & {
+  commentCount?: number;
+  assignees?: { id: string; name: string; image: string | null }[];
+};
+
 export function useTasks(boardId?: string) {
   return useQuery({
     queryKey: ["tasks", { boardId }],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (boardId) params.append("boardId", boardId);
-      return apiFetch<Task[]>(`/api/tasks?${params.toString()}`);
+      return apiFetch<TaskWithComments[]>(`/api/tasks?${params.toString()}`);
     },
   });
 }
