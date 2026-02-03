@@ -6,7 +6,6 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 import { fileURLToPath, URL } from 'url'
 
 import tailwindcss from '@tailwindcss/vite'
-import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   resolve: {
@@ -16,17 +15,6 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
-    // Only use Nitro proxy in development - production uses Docker networking
-    ...(process.env.NODE_ENV !== 'production' ? [
-      nitro({
-        routeRules: {
-          "/api/**": {
-            proxy: (process.env.VITE_API_URL || "http://api:8000") + "/**",
-          },
-        },
-      })
-    ] : []),
-    // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
@@ -35,7 +23,13 @@ const config = defineConfig({
     viteReact(),
   ],
   server: {
-    allowedHosts: ["web.ahmedlotfy.site"]
+    allowedHosts: ["web.ahmedlotfy.site"],
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      }
+    }
   }
 })
 
