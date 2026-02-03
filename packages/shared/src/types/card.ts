@@ -1,4 +1,5 @@
 export interface Card {
+  commentCount: number;
   id: string;
   listId: string;
   boardId: string;

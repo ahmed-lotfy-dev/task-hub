@@ -6,6 +6,8 @@ export * from './activities';
 export * from './boards';
 export * from './lists';
 export * from './cards';
+export * from './invitations';
+export * from './board_members';
 
 // Better Auth schema tables
 export * from './sessions';
@@ -23,6 +25,9 @@ export {
   workspaceRoleEnum,
 } from './workspace_members';
 export {
+  boardRoleEnum,
+} from './board_members';
+export {
   boardVisibilityEnum,
   boardTemplateEnum,
 } from './boards';
@@ -30,3 +35,7 @@ export {
   cardPriorityEnum,
   attachmentTypeEnum,
 } from './cards';
+export {
+  invitationStatusEnum,
+  invitationRoleEnum,
+} from './invitations';
