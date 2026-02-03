@@ -41,13 +41,13 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/web/node_modules ./web/node_modules
 COPY --from=deps /app/packages/shared ./packages/shared
 
-COPY --from=builder /app/web/dist ./web/dist
+# TanStack Start produces production output in .output/
+COPY --from=builder /app/web/.output ./web/.output
 COPY --from=builder /app/web/package.json ./web/package.json
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
 
-# The start entrypoint in dist/server/server.js expects to be run from the web folder or have its relative paths correct
 WORKDIR /app/web
-CMD ["bun", "run", "dist/server/server.js"]
+CMD ["bun", "run", ".output/server/index.mjs"]
