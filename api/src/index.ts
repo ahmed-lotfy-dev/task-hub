@@ -14,7 +14,7 @@ import { memberRoutes } from "./routes/members";
 import { betterAuth } from "./middleware/auth-middleware";
 import { mcpServer } from "./mcp";
 
-const app = new Elysia().
+const app = new Elysia()
   .use(openapi({ scalar: true, documentation: { info: { title: "Task Deck API", version: "1.0.0" } }, path: "/docs" }))
   .use(cors({
     origin: (request) => {
