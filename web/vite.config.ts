@@ -17,7 +17,7 @@ const config = defineConfig({
     devtools(),
     tanstackStart(),
     nitroV2Plugin({
-      preset: 'node-server',
+      preset: 'bun',
     }),
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],

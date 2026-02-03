@@ -34,16 +34,17 @@ RUN bun run build
 # Stage 3: Production
 FROM oven/bun:1-alpine AS runner
 
+RUN apk add --no-cache curl
+
 WORKDIR /app
 
-# TanStack Start SSR needs dependencies at runtime
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/web/node_modules ./web/node_modules
-COPY --from=deps /app/packages/shared ./packages/shared
+# Copy dependencies from builder for consistency
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/shared ./packages/shared
+COPY --from=builder /app/web/node_modules ./web/node_modules
 
-# Copy the entire build output to be safe
+# Copy the build output
 COPY --from=builder /app/web/.output ./web/.output
-# Also copy package.json for potential runtime scripts
 COPY --from=builder /app/web/package.json ./web/package.json
 
 EXPOSE 3000
