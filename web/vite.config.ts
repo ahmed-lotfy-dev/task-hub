@@ -25,6 +25,9 @@ const config = defineConfig({
     tailwindcss(),
     viteReact(),
   ],
+  ssr: {
+    noExternal: ['react-dom', 'react'],
+  },
   server: {
     allowedHosts: ["web.ahmedlotfy.site"],
     proxy: {
