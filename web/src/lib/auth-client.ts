@@ -3,7 +3,9 @@ import { inferAdditionalFields } from "better-auth/client/plugins";
 
 const isServer = typeof window === 'undefined';
 const baseURL = isServer
-  ? (process.env.VITE_API_URL || "http://api:8000") + "/api"
+  ? (process.env.NODE_ENV === 'production'
+    ? (process.env.VITE_API_URL || "http://api:8000")
+    : "http://localhost:8000") + "/api"
   : "/api";
 
 export const authClient = createAuthClient({
