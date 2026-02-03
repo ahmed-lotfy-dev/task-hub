@@ -16,7 +16,15 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
-    nitro(),
+    nitro({
+      routeRules: {
+        "/api/**": {
+          proxy: process.env.VITE_API_URL
+            ? `${process.env.VITE_API_URL}/**`
+            : "http://api.ahmedlotfy.site/**",
+        },
+      },
+    }),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
