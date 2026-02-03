@@ -30,6 +30,8 @@ RUN bun run build
 # Stage 3: Production
 FROM oven/bun:1-alpine AS runner
 
+RUN apk add --no-cache curl
+
 WORKDIR /app
 
 COPY --from=builder /app/node_modules ./node_modules
