@@ -19,9 +19,7 @@ const config = defineConfig({
     nitro({
       routeRules: {
         "/api/**": {
-          proxy: process.env.VITE_API_URL
-            ? `${process.env.VITE_API_URL}/**`
-            : "http://api.ahmedlotfy.site/**",
+          proxy: (process.env.VITE_API_URL || "http://api:8000") + "/**",
         },
       },
     }),
