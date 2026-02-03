@@ -38,14 +38,8 @@ RUN apk add --no-cache curl
 
 WORKDIR /app
 
-# Copy dependencies from builder for consistency
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/shared ./packages/shared
-COPY --from=builder /app/web/node_modules ./web/node_modules
-
-# Copy the build output
-COPY --from=builder /app/web/.output ./web/.output
-COPY --from=builder /app/web/package.json ./web/package.json
+# Copy the entire workspace to ensure all symlinks and dependencies are preserved
+COPY --from=builder /app /app
 
 EXPOSE 3000
 

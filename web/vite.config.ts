@@ -17,7 +17,7 @@ const config = defineConfig({
     devtools(),
     tanstackStart(),
     nitroV2Plugin({
-      preset: 'bun',
+      preset: 'node-server',
     }),
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
@@ -26,7 +26,7 @@ const config = defineConfig({
     viteReact(),
   ],
   ssr: {
-    noExternal: ['react-dom', 'react'],
+    noExternal: ['@tanstack/react-router', '@tanstack/react-start', '@tanstack/react-query', 'sonner'],
   },
   server: {
     allowedHosts: ["web.ahmedlotfy.site"],
