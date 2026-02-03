@@ -13,6 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AcceptInviteTokenRouteImport } from './routes/accept-invite.$token'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated.workspace'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated.tasks'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
@@ -22,6 +23,7 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated.h
 import { Route as AuthenticatedBoardsRouteImport } from './routes/_authenticated.boards'
 import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated.activity'
 import { Route as AuthenticatedWorkspaceSlugRouteImport } from './routes/_authenticated.workspace.$slug'
+import { Route as AuthenticatedBoardBoardIdRouteImport } from './routes/_authenticated.board.$boardId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -40,6 +42,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcceptInviteTokenRoute = AcceptInviteTokenRouteImport.update({
+  id: '/accept-invite/$token',
+  path: '/accept-invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
@@ -88,6 +95,12 @@ const AuthenticatedWorkspaceSlugRoute =
     path: '/$slug',
     getParentRoute: () => AuthenticatedWorkspaceRoute,
   } as any)
+const AuthenticatedBoardBoardIdRoute =
+  AuthenticatedBoardBoardIdRouteImport.update({
+    id: '/board/$boardId',
+    path: '/board/$boardId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,6 +114,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/accept-invite/$token': typeof AcceptInviteTokenRoute
+  '/board/$boardId': typeof AuthenticatedBoardBoardIdRoute
   '/workspace/$slug': typeof AuthenticatedWorkspaceSlugRoute
 }
 export interface FileRoutesByTo {
@@ -115,6 +130,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/accept-invite/$token': typeof AcceptInviteTokenRoute
+  '/board/$boardId': typeof AuthenticatedBoardBoardIdRoute
   '/workspace/$slug': typeof AuthenticatedWorkspaceSlugRoute
 }
 export interface FileRoutesById {
@@ -131,6 +148,8 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRouteWithChildren
+  '/accept-invite/$token': typeof AcceptInviteTokenRoute
+  '/_authenticated/board/$boardId': typeof AuthenticatedBoardBoardIdRoute
   '/_authenticated/workspace/$slug': typeof AuthenticatedWorkspaceSlugRoute
 }
 export interface FileRouteTypes {
@@ -147,6 +166,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/workspace'
+    | '/accept-invite/$token'
+    | '/board/$boardId'
     | '/workspace/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -161,6 +182,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/workspace'
+    | '/accept-invite/$token'
+    | '/board/$boardId'
     | '/workspace/$slug'
   id:
     | '__root__'
@@ -176,6 +199,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/tasks'
     | '/_authenticated/workspace'
+    | '/accept-invite/$token'
+    | '/_authenticated/board/$boardId'
     | '/_authenticated/workspace/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -184,6 +209,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  AcceptInviteTokenRoute: typeof AcceptInviteTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -214,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accept-invite/$token': {
+      id: '/accept-invite/$token'
+      path: '/accept-invite/$token'
+      fullPath: '/accept-invite/$token'
+      preLoaderRoute: typeof AcceptInviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/workspace': {
@@ -279,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWorkspaceSlugRouteImport
       parentRoute: typeof AuthenticatedWorkspaceRoute
     }
+    '/_authenticated/board/$boardId': {
+      id: '/_authenticated/board/$boardId'
+      path: '/board/$boardId'
+      fullPath: '/board/$boardId'
+      preLoaderRoute: typeof AuthenticatedBoardBoardIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -305,6 +345,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRouteWithChildren
+  AuthenticatedBoardBoardIdRoute: typeof AuthenticatedBoardBoardIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -316,6 +357,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRouteWithChildren,
+  AuthenticatedBoardBoardIdRoute: AuthenticatedBoardBoardIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -327,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  AcceptInviteTokenRoute: AcceptInviteTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
