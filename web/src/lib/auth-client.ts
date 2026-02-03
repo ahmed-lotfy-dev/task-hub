@@ -1,9 +1,10 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 
-// Get the API URL from environment or default to localhost
-// Get the API URL from environment
-const baseURL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+const isServer = typeof window === 'undefined';
+const baseURL = isServer
+  ? (process.env.VITE_API_URL || "http://api:8000")
+  : (import.meta.env.VITE_BACKEND_API_URL || "/api");
 
 export const authClient = createAuthClient({
   baseURL,

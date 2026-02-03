@@ -1,7 +1,12 @@
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+const isServer = typeof window === 'undefined';
+const API_BASE_URL = isServer
+  ? (process.env.VITE_API_URL || "http://api:8000")
+  : (import.meta.env.VITE_BACKEND_API_URL || "/api");
 
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  const url = isServer
+    ? `${API_BASE_URL}${path.startsWith('/api') ? '' : '/api'}${path.startsWith('/') ? '' : '/'}${path}`
+    : `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 
   const response = await fetch(url, {
     ...options,
