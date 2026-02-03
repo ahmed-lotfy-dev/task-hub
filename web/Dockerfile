@@ -21,6 +21,9 @@ COPY --from=deps /app/web/node_modules ./web/node_modules
 
 COPY package.json bun.lock ./
 COPY packages/shared ./packages/shared
+
+# Cache bust to ensure fresh code on each build
+ARG CACHE_BUST=1
 COPY web ./web
 
 WORKDIR /app/web
