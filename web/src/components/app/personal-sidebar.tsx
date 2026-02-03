@@ -1,10 +1,16 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Home, Inbox, CheckCircle2, Settings, History, LogOut } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 export function PersonalSidebar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate({ to: "/" });
+  };
 
   const links = [
     { name: "Home", href: "/home", icon: Home },
@@ -15,7 +21,7 @@ export function PersonalSidebar() {
   ];
 
   return (
-    <aside className="w-64 flex flex-col gap-8 p-6 bg-white/50 backdrop-blur-md border-r border-white/20">
+    <aside className="w-64 sticky top-0 h-screen flex flex-col gap-8 p-6 bg-white/50 backdrop-blur-md border-r border-white/20 self-start">
       <div className="text-xl font-bold px-2">TaskHub</div>
 
       <nav className="flex flex-col gap-2">
@@ -48,7 +54,7 @@ export function PersonalSidebar() {
         </Link>
 
         <button
-          onClick={() => signOut()}
+          onClick={handleSignOut}
           className="flex items-center gap-3 px-4 py-2 text-sm font-semibold text-zinc-500 hover:text-red-600 transition-colors mt-4 cursor-pointer"
         >
           <LogOut className="w-4 h-4" />

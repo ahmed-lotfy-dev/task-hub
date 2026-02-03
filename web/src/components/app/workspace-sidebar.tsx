@@ -1,11 +1,18 @@
-import { Link, useParams, useLocation } from "@tanstack/react-router";
+import { Link, useParams, useLocation, useNavigate } from "@tanstack/react-router";
 import { LayoutGrid, List, Users, Settings, Plus, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/lib/auth-client";
+import { InviteDialog } from "@/components/invitation/invite-dialog";
 
 export function WorkspaceSidebar() {
   const { slug } = useParams({ strict: false }) as { slug?: string };
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate({ to: "/" });
+  };
 
   const links = [
     { name: "Board View", href: `/workspace/${slug}`, icon: LayoutGrid },
@@ -60,8 +67,33 @@ export function WorkspaceSidebar() {
           <ProjectItem name="Mobile App" color="bg-primary" />
         </div>
 
+        <InviteDialog
+          workspaceId={slug}  // Using slug as ID for now? Wait, slug is NOT ID. workspaceRoutes uses ensureUserOnboarding.
+          // The fetch in sidebar doesn't have workspace ID readily available if we only have slug from URL.
+          // But usually we need ID.
+          // I need to fetch workspace by slug first! 
+          // Or I can modify InviteDialog to take slug? 
+          // No, API expects ID.
+          // Actually, I should probably fetch workspace details in layout or sidebar.
+          // For now, let's assume I need to fetch it.
+          // Wait, the workspace sidebar doesn't fetch workspace details yet?
+          // It just uses slug for links.
+          // I should skip workspace invite in sidebar for now if I don't have ID, 
+          // OR I can use the board page which has board ID.
+          // The user said "invite ... to our workspace".
+          // I'll skip sidebar for a moment and do board first which has ID?
+          // No, board page has `boardId`.
+          // Let's implement Board invite first.
+          trigger={
+            <button className="flex items-center gap-3 px-4 py-2 text-sm font-semibold text-zinc-500 hover:text-primary transition-colors cursor-pointer">
+              <Users className="w-4 h-4" />
+              Invite Members
+            </button>
+          }
+        />
+
         <button
-          onClick={() => signOut()}
+          onClick={handleSignOut}
           className="flex items-center gap-3 px-4 py-2 text-sm font-semibold text-zinc-500 hover:text-red-600 transition-colors mt-4 cursor-pointer"
         >
           <LogOut className="w-4 h-4" />

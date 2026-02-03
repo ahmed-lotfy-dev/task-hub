@@ -28,8 +28,9 @@ export function RecentBoards({ boards }: RecentBoardsProps) {
         {boards?.map((board) => (
           <BoardCard
             key={board.id}
+            id={board.id}
             name={board.name}
-            workspace="General" // This should ideally come from a join or store
+            workspace="General"
             color="bg-primary"
             activeTasks={0}
           />

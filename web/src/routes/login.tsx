@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { authClient } from '@/lib/auth-client'
+import { authClient, useSession } from '@/lib/auth-client'
 import { toast } from 'sonner'
 import { Chrome, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -16,14 +16,32 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>
 
+type LoginSearch = {
+  redirect?: string
+}
+
 export const Route = createFileRoute('/login')({
+  validateSearch: (search: Record<string, unknown>): LoginSearch => {
+    return {
+      redirect: (search.redirect as string) || undefined,
+    }
+  },
   component: LoginPage,
 })
 
 function LoginPage() {
   const navigate = useNavigate()
+  const { redirect } = Route.useSearch()
+  const { data: session, isPending: isSessionPending } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const [isSocialLoading, setIsSocialLoading] = useState(false)
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (session && !isSessionPending) {
+      navigate({ to: redirect || '/home' })
+    }
+  }, [session, isSessionPending, navigate, redirect])
 
   const {
     register,
@@ -47,7 +65,7 @@ function LoginPage() {
       }
 
       toast.success('Signed in successfully!')
-      navigate({ to: '/home' })
+      navigate({ to: redirect || '/home' })
     } catch (err) {
       toast.error('An unexpected error occurred')
     } finally {
@@ -60,7 +78,7 @@ function LoginPage() {
     try {
       await authClient.signIn.social({
         provider: 'google',
-        callbackURL: `${import.meta.env.VITE_FRONTEND_URL || ''}/home`,
+        callbackURL: redirect || `${window.location.origin}/home`,
       })
     } catch (err) {
       toast.error('Failed to sign in with Google')

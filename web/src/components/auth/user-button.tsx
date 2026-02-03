@@ -1,5 +1,5 @@
 import { useSession, signOut } from "@/lib/auth-client";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
  */
 export function UserButton() {
   const { data: session, isPending } = useSession();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate({ to: "/" });
+  };
 
   if (isPending) {
     return (
@@ -36,7 +42,7 @@ export function UserButton() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => signOut()}
+        onClick={handleSignOut}
         className="text-zinc-500 hover:text-destructive hover:bg-red-50"
       >
         Sign out

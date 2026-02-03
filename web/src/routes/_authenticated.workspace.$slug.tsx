@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Plus, Filter, ArrowUpDown, Search, Settings, Share2, Star, Users } from 'lucide-react'
-import { BoardColumn } from '@/components/workspace/board-column'
-import { TaskCard } from '@/components/workspace/task-card'
+import { BoardColumn } from "@/features/board/components/BoardColumn";
+import { TaskCard } from "@/features/board/components/TaskCard";
 
 export const Route = createFileRoute('/_authenticated/workspace/$slug')({
   component: WorkspacePage,
@@ -78,28 +78,33 @@ function WorkspacePage() {
       </header>
 
       <div className="grid lg:grid-cols-4 gap-8 items-start min-h-[60vh]">
-        <BoardColumn title="Backlog" count={5}>
+        <BoardColumn id="mock-backlog" title="Backlog" count={5}>
           <TaskCard
+            id="mock-1"
             title="Fix header responsiveness"
             tags={["Bug"]}
             members={1}
             comments={2}
           />
           <TaskCard
+            id="mock-2"
             title="Add data export to CSV"
             tags={["Feature"]}
             members={2}
+            comments={0}
           />
         </BoardColumn>
 
-        <BoardColumn title="In Progress" count={2}>
+        <BoardColumn id="mock-in-progress" title="In Progress" count={2}>
           <TaskCard
+            id="mock-3"
             title="Implement MCP Client"
             tags={["Dev", "AI"]}
             members={3}
             comments={8}
           />
           <TaskCard
+            id="mock-4"
             title="Design System Polish"
             tags={["Design"]}
             members={2}
@@ -107,8 +112,9 @@ function WorkspacePage() {
           />
         </BoardColumn>
 
-        <BoardColumn title="Review" count={1}>
+        <BoardColumn id="mock-review" title="Review" count={1}>
           <TaskCard
+            id="mock-5"
             title="Mobile App Navigation"
             tags={["Mobile"]}
             members={1}
@@ -116,21 +122,25 @@ function WorkspacePage() {
           />
         </BoardColumn>
 
-        <BoardColumn title="Completed" count={14}>
+        <BoardColumn id="mock-completed" title="Completed" count={14}>
           <TaskCard
+            id="mock-6"
             title="Initial project setup"
             tags={["Dev"]}
             members={1}
+            comments={0}
             isDone
           />
           <TaskCard
+            id="mock-7"
             title="Database migration script"
             tags={["Infra"]}
             members={1}
+            comments={0}
             isDone
           />
         </BoardColumn>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
