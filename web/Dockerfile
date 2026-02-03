@@ -36,11 +36,18 @@ FROM oven/bun:1-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/web/dist ./dist
-COPY --from=builder /app/web/package.json ./package.json
+# TanStack Start SSR needs dependencies at runtime
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/web/node_modules ./web/node_modules
+COPY --from=deps /app/packages/shared ./packages/shared
+
+COPY --from=builder /app/web/dist ./web/dist
+COPY --from=builder /app/web/package.json ./web/package.json
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
 
+# The start entrypoint in dist/server/server.js expects to be run from the web folder or have its relative paths correct
+WORKDIR /app/web
 CMD ["bun", "run", "dist/server/server.js"]
