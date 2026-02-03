@@ -7,6 +7,8 @@ import { fileURLToPath, URL } from 'url'
 
 import tailwindcss from '@tailwindcss/vite'
 
+import { nitro } from 'nitro/vite'
+
 const config = defineConfig({
   resolve: {
     alias: {
@@ -16,6 +18,13 @@ const config = defineConfig({
   plugins: [
     devtools(),
     tanstackStart(),
+    nitro({
+      routeRules: {
+        "/api/**": {
+          proxy: (process.env.VITE_API_URL || "http://api:8000") + "/**",
+        },
+      },
+    }) as any,
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),

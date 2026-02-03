@@ -29,7 +29,7 @@ ARG API_URL=http://api:8000
 ENV VITE_API_URL=${API_URL}
 ENV NODE_ENV=production
 
-RUN bun run build && ls -la .output && ls -la dist
+RUN bun run build
 
 # Stage 3: Production
 FROM oven/bun:1-alpine AS runner
