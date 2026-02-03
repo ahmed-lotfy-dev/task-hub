@@ -6,16 +6,19 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logActivity } from "../../lib/activity-logger";
 
 export const registerBoardTools = (server: McpServer) => {
-  server.tool(
+  server.registerTool(
     "get_workspace_boards",
     {
-      workspaceId: z.string().describe("The UUID of the workspace")
+      description: "Get all boards in a workspace",
+      inputSchema: z.object({
+        workspaceId: z.string().describe("The UUID of the workspace")
+      })
     },
     async ({ workspaceId }) => {
       const data = await db
         .select()
         .from(boards)
-        .where(eq(boards.workspaceId, workspaceId as any));
+        .where(eq(boards.workspaceId, workspaceId));
 
       return {
         content: [
@@ -28,19 +31,22 @@ export const registerBoardTools = (server: McpServer) => {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "create_board",
     {
-      userId: z.string().describe("The ID of the user creating the board"),
-      workspaceId: z.string().describe("The UUID of the workspace"),
-      name: z.string().describe("The name of the board"),
-      description: z.string().optional().describe("Board description"),
-      visibility: z.enum(["private", "team", "public"]).optional().describe("Board visibility"),
-      template: z.enum(["kanban", "scrum", "simple", "bug_tracker", "blank"]).optional().describe("Board template")
+      description: "Create a new board in a workspace",
+      inputSchema: z.object({
+        userId: z.string().describe("The ID of the user creating the board"),
+        workspaceId: z.string().describe("The UUID of the workspace"),
+        name: z.string().describe("The name of the board"),
+        description: z.string().optional().describe("Board description"),
+        visibility: z.enum(["private", "team", "public"]).optional().describe("Board visibility"),
+        template: z.enum(["kanban", "scrum", "simple", "bug_tracker", "blank"]).optional().describe("Board template")
+      })
     },
     async ({ userId, workspaceId, name, description, visibility, template }) => {
       const [board] = await db.insert(boards).values({
-        workspaceId: workspaceId as any,
+        workspaceId: workspaceId,
         name,
         description: description ?? null,
         visibility: visibility ?? "private",
@@ -49,7 +55,7 @@ export const registerBoardTools = (server: McpServer) => {
 
       await logActivity({
         userId,
-        workspaceId: workspaceId as any,
+        workspaceId: workspaceId,
         boardId: board.id,
         action: 'create',
         entityType: 'board',
@@ -64,26 +70,29 @@ export const registerBoardTools = (server: McpServer) => {
     }
   );
 
-  server.tool(
+  server.registerTool(
     "create_list",
     {
-      userId: z.string().describe("The ID of the user creating the list"),
-      boardId: z.string().describe("The UUID of the board"),
-      workspaceId: z.string().describe("The UUID of the workspace (needed for logging)"),
-      name: z.string().describe("The name of the list"),
-      position: z.number().optional().describe("Sort position")
+      description: "Create a new list on a board",
+      inputSchema: z.object({
+        userId: z.string().describe("The ID of the user creating the list"),
+        boardId: z.string().describe("The UUID of the board"),
+        workspaceId: z.string().describe("The UUID of the workspace (needed for logging)"),
+        name: z.string().describe("The name of the list"),
+        position: z.number().optional().describe("Sort position")
+      })
     },
     async ({ userId, boardId, workspaceId, name, position }) => {
       const [list] = await db.insert(lists).values({
-        boardId: boardId as any,
+        boardId: boardId,
         name,
         position: position ?? 1000,
       }).returning();
 
       await logActivity({
         userId,
-        workspaceId: workspaceId as any,
-        boardId: boardId as any,
+        workspaceId: workspaceId,
+        boardId: boardId,
         action: 'create',
         entityType: 'list',
         entityId: list.id,

@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import { db } from "../db/db";
-import { activities, users } from "../db/schema";
+import { activities, users, workspaceMembers } from "../db/schema";
 import { eq, desc } from "drizzle-orm";
 import { betterAuth } from "../middleware/auth-middleware";
 import { User } from "@taskflow/shared";
@@ -27,6 +27,8 @@ export const activityRoutes = new Elysia({ prefix: "/activities" })
       })
       .from(activities)
       .innerJoin(users, eq(activities.userId, users.id))
+      .innerJoin(workspaceMembers, eq(activities.workspaceId, workspaceMembers.workspaceId))
+      .where(eq(workspaceMembers.userId, user.id))
       .orderBy(desc(activities.createdAt))
       .limit(20);
 

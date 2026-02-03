@@ -10,7 +10,9 @@ export const apiKeyRoutes = new Elysia({ prefix: "/api-keys" })
   .use(betterAuth)
   .get("/", async (context: any) => {
     const user = context.user as User;
-    return await db
+    console.log(`[API Keys] Listing keys for user: "${user.id}" (email: ${user.email})`);
+
+    const results = await db
       .select({
         id: apiKeys.id,
         name: apiKeys.name,
@@ -20,13 +22,23 @@ export const apiKeyRoutes = new Elysia({ prefix: "/api-keys" })
         createdAt: apiKeys.createdAt,
       })
       .from(apiKeys)
-      .where(eq(apiKeys.userId, user.id));
+      .where(eq(apiKeys.userId, user.id.trim()));
+
+    console.log(`[API Keys] DB Results for user "${user.id.trim()}": ${JSON.stringify(results.map(r => ({ id: r.id, name: r.name })), null, 2)}`);
+
+    return results.map(key => ({
+      ...key,
+      createdAt: key.createdAt.toISOString(),
+      expiresAt: key.expiresAt?.toISOString() ?? null,
+      lastUsedAt: key.lastUsedAt?.toISOString() ?? null,
+    }));
   }, {
     auth: true,
     detail: { summary: "List API keys" }
   })
   .post("/", async (context: any) => {
     const user = context.user as User;
+    console.log(`[API Keys] Creating key for user: "${user.id}" (email: ${user.email})`);
     const body = context.body as { name: string; expiresInDays?: number };
     const { name, expiresInDays } = body;
     const { key, hash, preview } = await generateKey();
@@ -36,12 +48,14 @@ export const apiKeyRoutes = new Elysia({ prefix: "/api-keys" })
       : null;
 
     const [newKey] = await db.insert(apiKeys).values({
-      userId: user.id,
+      userId: user.id.trim(),
       name,
       key: hash,
       preview,
       expiresAt,
     }).returning();
+
+    console.log(`[API Keys] Created key "${name}" with ID: ${newKey.id} for user: ${user.id}`);
 
     return {
       ...newKey,

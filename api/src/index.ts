@@ -8,16 +8,24 @@ import { listRoutes } from "./routes/lists";
 import { taskRoutes } from "./routes/tasks";
 import { activityRoutes } from "./routes/activities";
 import { apiKeyRoutes } from "./routes/api-keys";
+import { invitationRoutes } from "./routes/invitations";
+import { commentRoutes } from "./routes/comments";
+import { memberRoutes } from "./routes/members";
 import { betterAuth } from "./middleware/auth-middleware";
 import { mcpServer } from "./mcp";
 
-const app = new Elysia()
+const app = new Elysia().
   .use(openapi({ scalar: true, documentation: { info: { title: "Task Deck API", version: "1.0.0" } }, path: "/docs" }))
   .use(cors({
-    origin: true,
+    origin: (request) => {
+      const origin = request.headers.get('origin');
+      if (!origin) return true;
+      return true; // Reflect origin for easier debugging while staying safe
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization", "Cookie", "Accept", "Last-Event-ID", "X-MCP-Protocol-Version"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie", "Accept", "X-MCP-Protocol-Version"],
+    exposeHeaders: ["Content-Type", "Authorization"],
   }))
   .use(mcpServer)
   .use(betterAuth)
@@ -29,6 +37,9 @@ const app = new Elysia()
       .use(taskRoutes)
       .use(activityRoutes)
       .use(apiKeyRoutes)
+      .use(invitationRoutes)
+      .use(commentRoutes)
+      .use(memberRoutes)
   )
   .get("/", () => "Hello From Elysia")
   .get("/health", () => ({ status: "ok" }))

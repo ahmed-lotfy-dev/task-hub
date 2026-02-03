@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { db } from "../db/db";
-import { boards } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { boards, workspaceMembers, boardMembers } from "../db/schema";
+import { eq, and, or } from "drizzle-orm";
 import { Board, User } from "@taskflow/shared";
 import type { Board as DBBoard } from "../db/schema/boards";
 import { betterAuth } from "../middleware/auth-middleware";
@@ -12,7 +12,7 @@ function mapBoard(b: DBBoard): Board {
     ...b,
     createdAt: b.createdAt.toISOString(),
     updatedAt: b.updatedAt.toISOString(),
-    background: b.background as any, // Cast to shared Background type
+    background: b.background as any,
     settings: b.settings as any,
     template: b.template as any,
     visibility: b.visibility as any,
@@ -22,13 +22,32 @@ function mapBoard(b: DBBoard): Board {
 export const boardRoutes = new Elysia({ prefix: "/boards" })
   .use(betterAuth)
   .get("/", async (context: any) => {
+    const user = context.user as User;
     const { workspaceId } = context.query;
-    const where = workspaceId
-      ? eq(boards.workspaceId, workspaceId)
-      : undefined; // In a real app, join with members to see accessible boards
 
-    const data = await db.select().from(boards).where(where);
-    return data.map(mapBoard);
+    const data = await db
+      .select({ board: boards })
+      .from(boards)
+      .leftJoin(workspaceMembers, eq(boards.workspaceId, workspaceMembers.workspaceId))
+      .leftJoin(boardMembers, eq(boards.id, boardMembers.boardId))
+      .where(
+        and(
+          or(
+            eq(workspaceMembers.userId, user.id),
+            eq(boardMembers.userId, user.id)
+          ),
+          workspaceId ? eq(boards.workspaceId, workspaceId) : undefined
+        )
+      )
+      .limit(100);
+
+    // Deduping might be needed if user is matched by both joins, 
+    // but map iteration usually handles duplicates if we just mapping records. 
+    // Ideally use distinct() in SQL but Drizzle distinctOn supported.
+    // For now simple JS dedup by ID
+    const uniqueBoards = Array.from(new Map(data.map(item => [item.board.id, item.board])).values());
+
+    return uniqueBoards.map(mapBoard);
   }, {
     auth: true,
     query: t.Object({

@@ -5,10 +5,13 @@ import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 export const registerAuthTools = (server: McpServer) => {
-  server.tool(
+  server.registerTool(
     "whoami",
     {
-      userId: z.string().describe("The authenticated user ID from the API key")
+      description: "Get information about the authenticated user",
+      inputSchema: z.object({
+        userId: z.string().describe("The authenticated user ID from the API key")
+      })
     },
     async ({ userId }) => {
       const [user] = await db
