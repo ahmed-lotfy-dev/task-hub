@@ -36,11 +36,11 @@ FROM oven/bun:1-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/web/.output ./.output
+COPY --from=builder /app/web/dist ./dist
 COPY --from=builder /app/web/package.json ./package.json
 
 EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["bun", "run", ".output/server/index.mjs"]
+CMD ["bun", "run", "dist/server/server.js"]
