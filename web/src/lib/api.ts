@@ -1,8 +1,7 @@
-const isServer = import.meta.env.SSR;
-const API_BASE_URL = import.meta.env.VITE_API_URL || (isServer ? (process.env.VITE_API_URL) : "");
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE_URL}/api${path}`;
+  const url = `${API_BASE_URL}${path}`;
 
   const response = await fetch(url, {
     ...options,

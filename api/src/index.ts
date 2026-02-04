@@ -28,9 +28,9 @@ const app = new Elysia()
     exposeHeaders: ["Content-Type", "Authorization"],
   }))
   .use(mcpServer)
+  .use(betterAuth)
   .group("/api", (app) =>
     app
-      .use(betterAuth)
       .use(workspaceRoutes)
       .use(boardRoutes)
       .use(listRoutes)
