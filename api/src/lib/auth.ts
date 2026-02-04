@@ -44,6 +44,8 @@ export const auth = betterAuth({
     "https://web.ahmedlotfy.site",
     "https://api.ahmedlotfy.site",
     "https://ahmedlotfy.site",
+    "https://task-hub-api.ahmedlotfy.site",
+    "https://task-hub.ahmedlotfy.site",
   ],
   logger: {
     level: "debug",
@@ -60,7 +62,7 @@ export const auth = betterAuth({
   advanced: {
     crossSubDomainCookies: {
       enabled: process.env.NODE_ENV === "production",
-      domain: ".ahmedlotfy.site",
+      domain: "ahmedlotfy.site",
     },
     useSecureCookies: process.env.NODE_ENV === "production" || process.env.BETTER_AUTH_URL?.startsWith("https://"),
     trustedProxyHeaders: true,

@@ -28,9 +28,9 @@ const app = new Elysia()
     exposeHeaders: ["Content-Type", "Authorization"],
   }))
   .use(mcpServer)
-  .use(betterAuth)
   .group("/api", (app) =>
     app
+      .use(betterAuth)
       .use(workspaceRoutes)
       .use(boardRoutes)
       .use(listRoutes)
@@ -40,12 +40,13 @@ const app = new Elysia()
       .use(invitationRoutes)
       .use(commentRoutes)
       .use(memberRoutes)
+      .get("/health", () => ({ status: "ok" }))
+      .get("/user", ({ user }) => user, {
+        auth: true,
+      })
   )
   .get("/", () => "Hello From Elysia")
-  .get("/health", () => ({ status: "ok" }))
-  .get("/user", ({ user }) => user, {
-    auth: true,
-  }).listen(process.env.PORT || 8000);
+  .listen(process.env.PORT || 8000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
