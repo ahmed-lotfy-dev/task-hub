@@ -40,12 +40,12 @@ const app = new Elysia()
       .use(invitationRoutes)
       .use(commentRoutes)
       .use(memberRoutes)
-      .get("/health", () => ({ status: "ok" }))
       .get("/user", ({ user }) => user, {
         auth: true,
       })
   )
   .get("/", () => "Hello From Elysia")
+  .get("/health", () => ({ status: "ok" }))
   .listen(process.env.PORT || 8000);
 
 console.log(
