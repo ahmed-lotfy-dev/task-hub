@@ -4,9 +4,12 @@ const API_BASE_URL = isServer
   : "";
 
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  // Ensure path starts with a slash
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
   const url = isServer
-    ? `${API_BASE_URL}${path.startsWith('/api') ? '' : '/api'}${path.startsWith('/') ? '' : '/'}${path}`
-    : `${API_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+    ? `${API_BASE_URL}/api${normalizedPath}`
+    : normalizedPath;
 
   const response = await fetch(url, {
     ...options,
