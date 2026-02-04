@@ -3,7 +3,7 @@ import { inferAdditionalFields } from "better-auth/client/plugins";
 
 const baseURL = (import.meta.env.VITE_API_URL ||
   (import.meta.env.SSR
-    ? (process.env.VITE_API_URL || "http://api:8000")
+    ? (process.env.VITE_API_URL)
     : window.location.origin)
 ) + "/api";
 

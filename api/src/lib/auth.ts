@@ -15,7 +15,7 @@ export const auth = betterAuth({
   }),
 
   secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET!,
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: "https://task-hub.ahmedlotfy.site/api",
 
   socialProviders: {
     github: {
@@ -61,8 +61,7 @@ export const auth = betterAuth({
   },
   advanced: {
     crossSubDomainCookies: {
-      enabled: process.env.NODE_ENV === "production",
-      domain: "ahmedlotfy.site",
+      enabled: false,
     },
     useSecureCookies: process.env.NODE_ENV === "production" || process.env.BETTER_AUTH_URL?.startsWith("https://"),
     trustedProxyHeaders: true,
