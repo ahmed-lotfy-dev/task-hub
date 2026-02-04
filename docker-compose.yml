@@ -29,13 +29,13 @@ services:
       context: .
       dockerfile: ./web/Dockerfile
       args:
-        - API_URL=http://api:8000
+        - API_URL=${VITE_API_URL}
     container_name: taskflow-web
     restart: unless-stopped
     ports:
       - "3005:3000"
     environment:
-      - VITE_API_URL=http://api:8000
+      - VITE_API_URL=${VITE_API_URL}
       - VITE_BACKEND_API_URL=/api
       - VITE_FRONTEND_URL=${VITE_FRONTEND_URL:-https://task-hub.ahmedlotfy.site}
     depends_on:
