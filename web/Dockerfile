@@ -26,7 +26,7 @@ COPY web ./web
 WORKDIR /app/web
 
 ARG API_URL
-ENV VITE_API_URL=${API_URL}
+ENV VITE_BACKEND_API_URL=${API_URL}
 ENV NODE_ENV=production
 
 RUN bun run build
