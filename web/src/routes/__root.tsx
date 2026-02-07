@@ -17,6 +17,10 @@ export const Route = createRootRoute({
       {
         title: 'Task Hub',
       },
+      {
+        name: 'description',
+        content: 'A powerful, intelligent task management platform for teams and personal use.',
+      },
     ],
     links: [
       {
@@ -31,6 +35,23 @@ export const Route = createRootRoute({
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap',
+      },
+    ],
+    scripts: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Task Hub',
+          url: 'https://web.ahmedlotfy.site',
+          publisher: {
+            '@type': 'Organization',
+            name: 'Ahmed Lotfy',
+            url: 'https://ahmedlotfy.site',
+            logo: 'https://web.ahmedlotfy.site/logo.png',
+          },
+        }),
       },
     ],
   }),

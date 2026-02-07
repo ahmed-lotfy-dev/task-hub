@@ -25,24 +25,18 @@ const config = defineConfig({
     tailwindcss(),
     viteReact(),
   ],
-  ssr: {
-    noExternal: [
-      'react',
-      'react-dom',
-      '@tanstack/react-router',
-      '@tanstack/react-start',
-      '@tanstack/react-query',
-      'sonner',
-    ],
-  },
+  // ssr: {
+  //   noExternal: [
+  //     'react',
+  //     'react-dom',
+  //     '@tanstack/react-router',
+  //     '@tanstack/react-start',
+  //     '@tanstack/react-query',
+  //     'sonner',
+  //   ],
+  // },
   server: {
     allowedHosts: ["web.ahmedlotfy.site"],
-    proxy: {
-      '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:8000',
-        changeOrigin: true,
-      }
-    }
   }
 })
 
