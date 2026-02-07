@@ -9,6 +9,31 @@ import { randomBytes } from "crypto";
 
 export const invitationRoutes = new Elysia({ prefix: "/invitations" })
   .use(betterAuth)
+  .get("/test-email", async () => {
+    // Test endpoint to verify email configuration
+    const testEmail = process.env.TEST_EMAIL || "no-reply@ahmedlotfy.site";
+    const testLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/test`;
+
+    console.log("[Test] Sending test email to:", testEmail);
+
+    const result = await sendInviteEmail({
+      email: testEmail,
+      inviteLink: testLink,
+      inviterName: "TaskHub Test",
+      contextName: "Test Workspace",
+      type: "workspace"
+    });
+
+    return {
+      success: result,
+      message: result ? "Test email sent successfully" : "Failed to send test email",
+      config: {
+        hasApiKey: !!process.env.RESEND_API_KEY,
+        fromEmail: process.env.RESEND_FROM_EMAIL,
+        frontendUrl: process.env.FRONTEND_URL
+      }
+    };
+  })
   .post("/", async (context: any) => {
     const user = context.user as User;
     const body = context.body;

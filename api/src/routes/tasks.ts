@@ -221,6 +221,26 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
         cardId: id,
         userId
       }).onConflictDoNothing();
+
+      // Log assignment activity
+      const [card] = await db.select().from(cards).where(eq(cards.id, id)).limit(1);
+      if (card) {
+        const [board] = await db.select().from(boards).where(eq(boards.id, card.boardId)).limit(1);
+        if (board) {
+          const user = context.user as User;
+          await logActivity({
+            userId: user.id,
+            workspaceId: board.workspaceId,
+            boardId: board.id,
+            action: 'assign',
+            entityType: 'card',
+            entityId: card.id,
+            entityName: card.title,
+            metadata: { assignedUserId: userId }
+          });
+        }
+      }
+
       console.log(`[Backend] Assignment successful for ${userId}`);
       return { success: true };
     } catch (error: any) {
