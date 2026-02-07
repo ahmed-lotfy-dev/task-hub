@@ -1,5 +1,5 @@
 import { useSession, signIn, signOut, signUp } from "@/lib/auth-client";
-import { useRouter } from "@tanstack/react-router";
+import { useNavigate } from "react-router";
 
 /**
  * Simple hook that wraps better-auth's useSession
@@ -8,7 +8,7 @@ import { useRouter } from "@tanstack/react-router";
  */
 export function useAuth() {
   const sessionQuery = useSession();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return {
     // Session state from better-auth
@@ -22,6 +22,6 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
-    router,
+    navigate,
   };
 }

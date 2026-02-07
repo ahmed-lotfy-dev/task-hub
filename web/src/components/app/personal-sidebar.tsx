@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Home, Inbox, CheckCircle2, Settings, History, LogOut } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,7 @@ export function PersonalSidebar() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate({ to: "/" });
+    navigate("/");
   };
 
   const links = [

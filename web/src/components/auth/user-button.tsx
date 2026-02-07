@@ -1,5 +1,5 @@
 import { useSession, signOut } from "@/lib/auth-client";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -12,7 +12,7 @@ export function UserButton() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate({ to: "/" });
+    navigate("/");
   };
 
   if (isPending) {

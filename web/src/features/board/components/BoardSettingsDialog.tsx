@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router";
 import { Loader2 } from "lucide-react";
 
 interface BoardSettingsDialogProps {
@@ -56,7 +56,7 @@ export function BoardSettingsDialog({ boardId, boardName, open, onOpenChange }: 
       toast.success("Board deleted");
       queryClient.invalidateQueries({ queryKey: ["boards"] });
       onOpenChange(false);
-      navigate({ to: "/workspace" });
+      navigate("/workspace");
     },
     onError: () => {
       toast.error("Failed to delete board");

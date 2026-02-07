@@ -1,14 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { User, Monitor, Shield, Key, Bell, Settings as SettingsIcon } from "lucide-react";
 import { APIKeyManager } from "@/components/settings/api-key-manager";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/settings")({
-  component: SettingsPage,
-});
-
-function SettingsPage() {
+export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("api");
 
   const tabs = [

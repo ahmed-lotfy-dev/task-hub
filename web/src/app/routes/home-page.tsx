@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";
 import { useWorkspaces } from "@/hooks/use-workspaces";
 import { useBoards as useRecentBoards } from "@/hooks/use-boards";
@@ -11,11 +10,7 @@ import { RecentBoards } from "@/components/home/dashboard/recent-boards";
 import { PriorityTasks } from "@/components/home/dashboard/priority-tasks";
 import { HomeSidebar } from "@/components/home/dashboard/home-sidebar";
 
-export const Route = createFileRoute("/_authenticated/home")({
-  component: HomePage,
-});
-
-function HomePage() {
+export function HomePage() {
   const { data: session } = useSession();
   const { data: workspaces, isLoading: isLoadingWorkspaces } = useWorkspaces();
   const { data: boards, isLoading: isLoadingBoards } = useRecentBoards();

@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,11 +17,7 @@ import { useNotifications, useMarkAsRead, useMarkAllAsRead } from '@/hooks/use-n
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 
-export const Route = createFileRoute('/_authenticated/inbox')({
-  component: InboxPage,
-});
-
-function InboxPage() {
+export function InboxPage() {
   const { data: notifications = [], isLoading } = useNotifications();
   const markAsRead = useMarkAsRead();
   const markAllAsRead = useMarkAllAsRead();
@@ -156,14 +152,9 @@ function InboxPage() {
                         {/* Deep Linking Logic */}
                         {(notification.activity.boardId && (notification.activity.entityType === 'card' || notification.activity.entityType === 'comment')) ? (
                           <Link
-                            to="/board/$boardId"
-                            params={{ boardId: notification.activity.boardId }}
-                            search={(prev: any) => ({
-                              ...prev,
-                              cardId: notification.activity.entityType === 'card'
+                            to={`/board/${notification.activity.boardId}?cardId=${notification.activity.entityType === 'card'
                                 ? notification.activity.entityId
-                                : notification.activity.metadata?.cardId
-                            })}
+                                : notification.activity.metadata?.cardId}`}
                             className="block group-hover:text-primary transition-colors"
                           >
                             <p className="text-base font-medium text-foreground/90 flex items-center gap-2">

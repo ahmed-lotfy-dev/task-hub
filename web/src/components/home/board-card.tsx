@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ interface BoardCardProps {
 
 export function BoardCard({ id, name, workspace, color, activeTasks }: BoardCardProps) {
   return (
-    <Link to="/board/$boardId" params={{ boardId: id }} className="block">
+    <Link to={`/board/${id}`} className="block">
       <Card className="p-6 hover:translate-y-[-8px] transition-all cursor-pointer group relative overflow-hidden">
         <div className={cn("absolute top-0 right-0 w-24 h-24 blur-3xl opacity-20 -mr-10 -mt-10", color)} />
         <div className="flex flex-col gap-4 relative z-10">

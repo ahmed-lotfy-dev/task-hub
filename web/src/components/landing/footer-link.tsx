@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 
 interface FooterLinkProps {
   label: string;
@@ -7,7 +7,7 @@ interface FooterLinkProps {
 
 export function FooterLink({ label, href = "#" }: FooterLinkProps) {
   return (
-    <Link to={href as any} className="text-muted-foreground font-bold hover:text-primary transition-colors cursor-pointer text-sm">
+    <Link to={href} className="text-muted-foreground font-bold hover:text-primary transition-colors cursor-pointer text-sm">
       {label}
     </Link>
   );

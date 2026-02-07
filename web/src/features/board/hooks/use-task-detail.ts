@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/lib/auth-client";
 import { useLists } from "@/hooks/use-lists";
-import { useParams } from "@tanstack/react-router";
+import { useParams } from "react-router";
 import { toast } from "sonner";
 
 import { useBoards } from "@/hooks/use-boards";

@@ -3,7 +3,7 @@
 import { Plus, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { CreateTaskDialog } from "./CreateTaskDialog";
-import { useParams } from "@tanstack/react-router";
+import { useParams } from "react-router";
 import { useDroppable } from "@dnd-kit/core";
 
 interface BoardColumnProps {

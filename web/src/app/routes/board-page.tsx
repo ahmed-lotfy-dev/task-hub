@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Plus, Loader2 } from 'lucide-react'
 import { BoardColumn } from '@/features/board/components/BoardColumn'
@@ -22,25 +21,16 @@ import { SortableTaskCard } from '@/features/board/components/SortableTaskCard';
 import { apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { useParams, useSearchParams } from 'react-router';
 
 import { TaskDetailDialog } from '@/features/board/components/TaskDetail';
 import { BoardHeader } from '@/features/board/components/BoardHeader';
 import { BoardSettingsDialog } from '@/features/board/components/BoardSettingsDialog';
 
-import { z } from 'zod';
-
-const boardSearchSchema = z.object({
-  cardId: z.string().optional(),
-});
-
-export const Route = createFileRoute('/_authenticated/board/$boardId')({
-  component: BoardPage,
-  validateSearch: (search) => boardSearchSchema.parse(search),
-})
-
-function BoardPage() {
-  const { boardId } = Route.useParams()
-  const { cardId } = Route.useSearch()
+export function BoardPage() {
+  const { boardId } = useParams<{ boardId: string }>()
+  const [searchParams] = useSearchParams()
+  const cardId = searchParams.get('cardId')
   const queryClient = useQueryClient();
   const [activeTask, setActiveTask] = useState<any>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(cardId || null);
@@ -49,8 +39,8 @@ function BoardPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: boards } = useBoards()
-  const { data: lists, isLoading: isLoadingLists } = useLists(boardId)
-  const { data: tasks, isLoading: isLoadingTasks } = useTasks(boardId)
+  const { data: lists, isLoading: isLoadingLists } = useLists(boardId!)
+  const { data: tasks, isLoading: isLoadingTasks } = useTasks(boardId!)
 
   // Configure sensors for drag detection
   const sensors = useSensors(
@@ -140,7 +130,7 @@ function BoardPage() {
     <div className="flex flex-col gap-10">
       <BoardHeader
         board={board}
-        boardId={boardId}
+        boardId={boardId!}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onSettingsClick={() => setIsSettingsOpen(true)}
@@ -233,7 +223,7 @@ function BoardPage() {
       {/* Board Settings Dialog */}
       {board && (
         <BoardSettingsDialog
-          boardId={boardId}
+          boardId={boardId!}
           boardName={board.name}
           open={isSettingsOpen}
           onOpenChange={setIsSettingsOpen}

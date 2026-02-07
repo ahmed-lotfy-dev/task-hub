@@ -1,4 +1,3 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
@@ -8,6 +7,7 @@ import { authClient, useSession } from '@/lib/auth-client'
 import { toast } from 'sonner'
 import { Github, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useNavigate, useLocation, Link } from 'react-router'
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -17,22 +17,10 @@ const signupSchema = z.object({
 
 type SignupValues = z.infer<typeof signupSchema>
 
-type SignupSearch = {
-  redirect?: string
-}
-
-export const Route = createFileRoute('/signup')({
-  validateSearch: (search: Record<string, unknown>): SignupSearch => {
-    return {
-      redirect: (search.redirect as string) || undefined,
-    }
-  },
-  component: SignupPage,
-})
-
-function SignupPage() {
+export function SignupPage() {
   const navigate = useNavigate()
-  const { redirect } = Route.useSearch()
+  const location = useLocation()
+  const redirect = (location.state as { redirect?: string })?.redirect
   const { data: session, isPending: isSessionPending } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const [isSocialLoading, setIsSocialLoading] = useState(false)
@@ -40,7 +28,7 @@ function SignupPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (session && !isSessionPending) {
-      navigate({ to: redirect || '/home' })
+      navigate(redirect || '/home')
     }
   }, [session, isSessionPending, navigate, redirect])
 
@@ -68,7 +56,7 @@ function SignupPage() {
       }
 
       toast.success('Account created successfully!')
-      navigate({ to: redirect || '/home' })
+      navigate(redirect || '/home')
     } catch (err) {
       toast.error('An unexpected error occurred')
     } finally {

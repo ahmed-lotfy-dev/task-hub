@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { LayoutGrid, ChevronRight, Plus } from "lucide-react";
 import { Board } from "@taskflow/shared";
 import { BoardCard } from "@/components/home/board-card";

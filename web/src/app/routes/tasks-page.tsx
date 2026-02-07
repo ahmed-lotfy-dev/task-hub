@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import {  useQueries } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
@@ -12,14 +11,9 @@ import { TaskDetailDialog } from '@/features/board/components/TaskDetail';
 import { useTasks } from '@/hooks/use-tasks';
 import { useAuth } from '@/hooks/use-auth';
 import { useBoards } from '@/hooks/use-boards';
-// import { useLists } from '@/hooks/use-lists';
 import type { Card as CardType, List } from '@taskflow/shared';
 
-export const Route = createFileRoute('/_authenticated/tasks')({
-  component: TasksPage,
-});
-
-function TasksPage() {
+export function TasksPage() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all');

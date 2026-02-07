@@ -1,27 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { HeroSection } from '@/components/landing/hero-section'
 import { HowItWorksSection } from '@/components/landing/how-it-works-section'
 import { PricingSection } from '@/components/landing/pricing-section'
 import { CTASection } from '@/components/landing/cta-section'
 import { LandingFooter } from '@/components/landing/landing-footer'
-
-export const Route = createFileRoute('/')({
-  component: LandingPage,
-})
-
-import { useRouter } from '@tanstack/react-router'
-
+import { useNavigate } from 'react-router'
 import { useAuth } from '@/hooks/use-auth'
 
-function LandingPage() {
-  const router = useRouter()
+export function LandingPage() {
+  const navigate = useNavigate()
   const { isAuthenticated, isPending } = useAuth()
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
-      router.navigate({ to: '/home' })
+      navigate('/home')
     } else {
-      router.navigate({ to: '/signup' })
+      navigate('/signup')
     }
   }
 

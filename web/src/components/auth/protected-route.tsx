@@ -1,5 +1,5 @@
 import { useSession } from "@/lib/auth-client";
-import { useRouter, useLocation } from "@tanstack/react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useEffect } from "react";
 
 interface ProtectedRouteProps {
@@ -19,18 +19,15 @@ export function ProtectedRoute({
   redirectTo = "/login",
 }: ProtectedRouteProps) {
   const { data: session, isPending } = useSession();
-  const router = useRouter();
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
     if (!isPending && !session) {
       // Redirect to login with return URL
-      router.navigate({
-        to: redirectTo as any,
-        search: { returnUrl: pathname } as any
-      });
+      navigate(redirectTo, { state: { returnUrl: pathname } });
     }
-  }, [session, isPending, router, pathname, redirectTo]);
+  }, [session, isPending, navigate, pathname, redirectTo]);
 
   // Show fallback or nothing while checking auth
   if (isPending) {

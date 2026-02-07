@@ -1,17 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useActivities } from "@/hooks/use-activities";
 import { ActivityItem } from "@/components/home/activity-item";
 import { Card } from "@/components/ui/card";
 import { History, Loader2, ArrowLeft } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { formatDate, DATE_FORMATS } from "@taskflow/shared";
 
-export const Route = createFileRoute("/_authenticated/activity")({
-  component: ActivityHistoryPage,
-});
-
-function ActivityHistoryPage() {
+export function ActivityPage() {
   const { data: activities, isLoading } = useActivities();
 
   return (

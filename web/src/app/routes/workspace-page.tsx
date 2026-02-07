@@ -1,15 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { useParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Plus, Filter, ArrowUpDown, Search, Settings, Share2, Star, Users } from 'lucide-react'
 import { BoardColumn } from "@/features/board/components/BoardColumn";
 import { TaskCard } from "@/features/board/components/TaskCard";
 
-export const Route = createFileRoute('/_authenticated/workspace/$slug')({
-  component: WorkspacePage,
-})
-
-function WorkspacePage() {
-  const { slug } = Route.useParams()
+export function WorkspacePage() {
+  const { slug } = useParams<{ slug: string }>()
 
   return (
     <div className="flex flex-col gap-10">
@@ -17,7 +13,7 @@ function WorkspacePage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-primary shadow-lg flex items-center justify-center text-white text-2xl font-bold">
-              {slug[0].toUpperCase()}
+              {slug![0].toUpperCase()}
             </div>
             <div>
               <h1 className="text-3xl font-extrabold text-[#2D3748] tracking-tight flex items-center gap-3">

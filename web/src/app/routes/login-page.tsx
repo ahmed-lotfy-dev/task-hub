@@ -1,44 +1,22 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { authClient, useSession } from '@/lib/auth-client'
 import { toast } from 'sonner'
 import { Github, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router'
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-})
-
-type LoginValues = z.infer<typeof loginSchema>
-
-type LoginSearch = {
-  redirect?: string
-}
-
-export const Route = createFileRoute('/login')({
-  validateSearch: (search: Record<string, unknown>): LoginSearch => {
-    return {
-      redirect: (search.redirect as string) || undefined,
-    }
-  },
-  component: LoginPage,
-})
-
-function LoginPage() {
+export function LoginPage() {
   const navigate = useNavigate()
-  const { redirect } = Route.useSearch()
+  const location = useLocation()
+  const redirect = (location.state as { redirect?: string })?.redirect
   const { data: session, isPending: isSessionPending } = useSession()
   const [activeProvider, setActiveProvider] = useState<'google' | 'github' | null>(null)
 
   // Redirect if already logged in
   useEffect(() => {
     if (session && !isSessionPending) {
-      navigate({ to: redirect || '/home' })
+      navigate(redirect || '/home')
     }
   }, [session, isSessionPending, navigate, redirect])
 

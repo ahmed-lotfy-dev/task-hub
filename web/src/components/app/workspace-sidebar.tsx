@@ -1,4 +1,4 @@
-import { Link, useParams, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useParams, useLocation, useNavigate } from "react-router";
 import { LayoutGrid, List, Users, Settings, Plus, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/lib/auth-client";
@@ -11,7 +11,7 @@ export function WorkspaceSidebar() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate({ to: "/" });
+    navigate("/");
   };
 
   const links = [
