@@ -27,16 +27,24 @@ import { TaskDetailDialog } from '@/features/board/components/TaskDetail';
 import { BoardHeader } from '@/features/board/components/BoardHeader';
 import { BoardSettingsDialog } from '@/features/board/components/BoardSettingsDialog';
 
+import { z } from 'zod';
+
+const boardSearchSchema = z.object({
+  cardId: z.string().optional(),
+});
+
 export const Route = createFileRoute('/_authenticated/board/$boardId')({
   component: BoardPage,
+  validateSearch: (search) => boardSearchSchema.parse(search),
 })
 
 function BoardPage() {
   const { boardId } = Route.useParams()
+  const { cardId } = Route.useSearch()
   const queryClient = useQueryClient();
   const [activeTask, setActiveTask] = useState<any>(null);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(cardId || null);
+  const [isDetailOpen, setIsDetailOpen] = useState(!!cardId);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 

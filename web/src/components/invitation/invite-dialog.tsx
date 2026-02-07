@@ -110,18 +110,18 @@ export function InviteDialog({ workspaceId, boardId, trigger }: InviteDialogProp
               </SelectContent>
             </Select>
           </div>
+          <DialogFooter className="col-span-4">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={inviteMutation.isPending}>
+              {inviteMutation.isPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Send Invitation
+            </Button>
+          </DialogFooter>
         </form>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button type="submit" onClick={handleSubmit} disabled={inviteMutation.isPending}>
-            {inviteMutation.isPending && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Send Invitation
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

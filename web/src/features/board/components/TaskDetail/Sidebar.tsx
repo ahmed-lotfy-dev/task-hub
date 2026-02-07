@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Plus, X, Check, Users, Calendar, Tag, Info } from "lucide-react";
-import { toast } from "sonner";
 
 interface TaskDetailSidebarProps {
   assignees: any[];
@@ -80,26 +79,22 @@ export function TaskDetailSidebar({
                       return (
                         <CommandItem
                           key={candidate.id}
-                          value={`${candidate.id}-${candidate.name}`}
+                          value={candidate.name}
                           onSelect={() => {
-                            console.log(`[Frontend] CommandItem onSelect triggered for: ${candidate.name}`);
-                            toast.info(`Attempting to assign: ${candidate.name}`);
+                            console.log("[Sidebar] onSelect triggered", candidate.id);
                             if (isAssigned) {
                               onUnassign(candidate.id);
                             } else {
                               onAssign(candidate.id);
                             }
                           }}
-                          onPointerDown={() => {
-                            // Fallback in case onSelect fails
-                            console.log(`[Frontend] CommandItem onPointerDown triggered for: ${candidate.name}`);
+                          onPointerDown={(e) => {
+                            // Prevent default to avoid focus loss, but allow click to propagate
+                            e.preventDefault();
                           }}
-                          onClick={() => {
-                            console.log(`[Frontend] CommandItem onClick triggered for: ${candidate.name}`);
-                          }}
-                          className="rounded-xl h-11 px-3 cursor-pointer"
+                          className="rounded-xl h-11 px-3 cursor-pointer aria-selected:bg-zinc-100 data-[selected=true]:bg-zinc-100"
                         >
-                          <div className="flex items-center gap-3 flex-1">
+                          <div className="flex items-center gap-3 flex-1 pointer-events-none">
                             <Avatar className="w-6 h-6 ring-2 ring-zinc-50">
                               <AvatarImage src={candidate.image} />
                               <AvatarFallback className="text-[10px] font-bold bg-zinc-100 text-zinc-600">
