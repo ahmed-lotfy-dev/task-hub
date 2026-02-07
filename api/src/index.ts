@@ -10,6 +10,7 @@ import { activityRoutes } from "./routes/activities";
 import { apiKeyRoutes } from "./routes/api-keys";
 import { invitationRoutes } from "./routes/invitations";
 import { commentRoutes } from "./routes/comments";
+import { notificationRoutes } from "./routes/notifications";
 import { memberRoutes } from "./routes/members";
 import { betterAuth } from "./middleware/auth-middleware";
 import { mcpServer } from "./mcp";
@@ -39,6 +40,7 @@ const app = new Elysia()
       .use(apiKeyRoutes)
       .use(invitationRoutes)
       .use(commentRoutes)
+      .use(notificationRoutes)
       .use(memberRoutes)
       .get("/user", ({ user }) => user, {
         auth: true,

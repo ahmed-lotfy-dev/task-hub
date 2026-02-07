@@ -13,6 +13,8 @@ export * from './board_members';
 export * from './sessions';
 export * from './accounts';
 export * from './verifications';
+export * from './notifications';
+
 
 // API Keys
 export * from './api_keys';
