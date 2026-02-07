@@ -5,6 +5,7 @@ import { eq, and, or, sql } from "drizzle-orm";
 import { betterAuth } from "../middleware/auth-middleware";
 import { logActivity } from "../lib/activity-logger";
 import { Card as Task, User } from "@taskflow/shared";
+import { mcpEvents } from "../lib/mcp-events";
 
 export const taskRoutes = new Elysia({ prefix: "/tasks" })
   .get("/", async (context: any) => {
@@ -127,6 +128,22 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
         entityId: c.id,
         entityName: c.title,
       });
+
+      mcpEvents.emitTaskEvent({
+        type: "task:created",
+        task: {
+          id: c.id,
+          title: c.title,
+          boardId: c.boardId,
+          workspaceId: board.workspaceId,
+          listId: c.listId,
+          description: c.description || undefined,
+          priority: c.priority || undefined,
+        },
+        userId: user.id,
+        workspaceId: board.workspaceId,
+        timestamp: new Date().toISOString(),
+      });
     }
 
     return {
@@ -152,11 +169,33 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
   .patch("/:id", async (context: any) => {
     const { id } = context.params;
     const body = context.body;
+    const user = context.user as User;
+
     const [card] = await db.update(cards)
       .set(body)
       .where(eq(cards.id, id))
       .returning();
     const c = card;
+
+    const [board] = await db.select().from(boards).where(eq(boards.id, c.boardId)).limit(1);
+    if (board) {
+      mcpEvents.emitTaskEvent({
+        type: "task:updated",
+        task: {
+          id: c.id,
+          title: c.title,
+          boardId: c.boardId,
+          workspaceId: board.workspaceId,
+          listId: c.listId,
+          description: c.description || undefined,
+          priority: c.priority || undefined,
+        },
+        userId: user.id,
+        workspaceId: board.workspaceId,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     return {
       ...c,
       createdAt: c.createdAt.toISOString(),
@@ -199,6 +238,19 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
           entityId: card.id,
           entityName: card.title,
         });
+
+        mcpEvents.emitTaskEvent({
+          type: "task:deleted",
+          task: {
+            id: card.id,
+            title: card.title,
+            boardId: card.boardId,
+            workspaceId: board.workspaceId,
+          },
+          userId: user.id,
+          workspaceId: board.workspaceId,
+          timestamp: new Date().toISOString(),
+        });
       }
     }
 
@@ -237,6 +289,20 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
             entityId: card.id,
             entityName: card.title,
             metadata: { assignedUserId: userId }
+          });
+
+          mcpEvents.emitTaskEvent({
+            type: "task:assigned",
+            task: {
+              id: card.id,
+              title: card.title,
+              boardId: card.boardId,
+              workspaceId: board.workspaceId,
+              assignedUserId: userId,
+            },
+            userId: user.id,
+            workspaceId: board.workspaceId,
+            timestamp: new Date().toISOString(),
           });
         }
       }

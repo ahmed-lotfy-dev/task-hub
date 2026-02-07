@@ -1,14 +1,47 @@
 import { Elysia } from "elysia";
-import { mcp } from "elysia-mcp";
+import { mcp, transports } from "elysia-mcp";
 import { registerAllTools } from "./tools";
 import { db } from "../db/db";
 import { apiKeys, users } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { hashKey } from "../lib/api-key-utils";
+import { mcpEvents, TaskEvent } from "../lib/mcp-events";
+
+const sessionUserMap = new Map<string, string>();
+
+mcpEvents.on("task:event", async (event: TaskEvent) => {
+  console.log(`[MCP] Task event received:`, event.type, event.task.id);
+
+  for (const [sessionId, transport] of Object.entries(transports)) {
+    const userId = sessionUserMap.get(sessionId);
+
+    if (userId && (userId === event.userId || event.workspaceId)) {
+      try {
+        await transport.send({
+          jsonrpc: "2.0",
+          method: "notifications/message",
+          params: {
+            level: "info",
+            logger: "taskhub",
+            data: {
+              type: event.type,
+              task: event.task,
+              timestamp: event.timestamp,
+            }
+          }
+        });
+        console.log(`[MCP] Notification sent to session ${sessionId} (user ${userId})`);
+      } catch (error) {
+        console.error(`[MCP] Failed to send notification to ${sessionId}:`, error);
+      }
+    }
+  }
+});
 
 export const mcpServer = new Elysia({ name: "mcp-server" })
   .use(
     mcp({
+      stateless: true,
       serverInfo: {
         name: "Task Hub AI Bridge",
         version: "1.0.0",
@@ -38,6 +71,12 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
 
         await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.key, hashedKey));
 
+        const sessionId = request.headers.get("mcp-session-id");
+        if (sessionId) {
+          sessionUserMap.set(sessionId, keyRecord.userId);
+          console.log(`[MCP] Mapped session ${sessionId} to user ${keyRecord.userId}`);
+        }
+
         return {
           authInfo: {
             userId: keyRecord.userId,
@@ -52,3 +91,5 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
       }
     })
   );
+
+export { sessionUserMap };
