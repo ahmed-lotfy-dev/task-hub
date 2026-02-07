@@ -83,6 +83,73 @@ export async function sendInviteEmail({
   }
 }
 
+interface SendDirectAddEmailParams {
+  email: string;
+  inviterName: string;
+  contextName: string;
+  type: 'workspace' | 'board';
+  workspaceUrl: string;
+}
+
+export async function sendDirectAddEmail({
+  email,
+  inviterName,
+  contextName,
+  type,
+  workspaceUrl
+}: SendDirectAddEmailParams) {
+  console.log(`[Mail] Sending direct add notification to ${email} for ${contextName}`);
+
+  if (!process.env.RESEND_API_KEY) {
+    console.error("[Mail] CRITICAL: RESEND_API_KEY is missing!");
+    return false;
+  }
+
+  const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'no-reply@ahmedlotfy.site';
+  const finalFrom = `TaskHub <${FROM_EMAIL}>`;
+
+  try {
+    const payload = {
+      from: finalFrom,
+      to: [email],
+      subject: `You've been added to ${contextName} on TaskHub`,
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #f8fafc;">
+          <div style="background-color: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="color: #1a1a1a; font-size: 24px; margin-bottom: 16px;">Welcome! 🎉</h2>
+            <p style="color: #4a5568; line-height: 1.6; margin-bottom: 8px;">
+              <strong>${inviterName}</strong> has added you to the <strong>${contextName}</strong> ${type}.
+            </p>
+            <p style="color: #4a5568; line-height: 1.6; margin-bottom: 24px;">
+              Since you already have a TaskHub account, you can access it immediately by clicking the button below:
+            </p>
+            <a href="${workspaceUrl}" style="display: inline-block; background-color: #0070f3; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; margin-top: 16px;">Go to ${contextName}</a>
+            <p style="margin-top: 32px; color: #718096; font-size: 14px;">
+              You can also find this ${type} in your dashboard when you log in to TaskHub.
+            </p>
+          </div>
+          <p style="text-align: center; color: #a0aec0; font-size: 12px; margin-top: 16px;">
+            TaskHub - Manage tasks with a human touch
+          </p>
+        </div>
+      `,
+    };
+
+    const response = await resend.emails.send(payload);
+
+    if (response.error) {
+      console.error('[Mail] Error sending direct add email:', response.error);
+      return false;
+    }
+
+    console.log(`[Mail] ✅ Direct add email sent to ${email}. ID: ${response.data?.id}`);
+    return true;
+  } catch (err) {
+    console.error('[Mail] Exception while sending direct add email:', err);
+    return false;
+  }
+}
+
 // Check for API key on startup
 if (!process.env.RESEND_API_KEY) {
   console.warn("⚠️ RESEND_API_KEY is not set. Emails will fail to send.");

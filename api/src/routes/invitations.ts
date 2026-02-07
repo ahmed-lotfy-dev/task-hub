@@ -1,10 +1,9 @@
 import { Elysia, t } from "elysia";
 import { db } from "../db/db";
-import { invitations, workspaces, boards, workspaceMembers, boardMembers, users } from "../db/schema";
+import { invitations, workspaces, boards, workspaceMembers, boardMembers, users, activities, notifications, type User } from "../db/schema";
 import { eq, and, gt } from "drizzle-orm";
 import { betterAuth } from "../middleware/auth-middleware";
-import { User } from "@taskflow/shared";
-import { sendInviteEmail } from "../lib/mail";
+import { sendInviteEmail, sendDirectAddEmail } from "../lib/mail";
 import { randomBytes } from "crypto";
 
 export const invitationRoutes = new Elysia({ prefix: "/invitations" })
@@ -39,9 +38,174 @@ export const invitationRoutes = new Elysia({ prefix: "/invitations" })
     const body = context.body;
     const { email, workspaceId, boardId, role } = body;
 
-    // Validate request: must have either workspaceId or boardId, but not both (for simplicity, or handle priority)
+    // Validate request: must have either workspaceId or boardId
     if (!workspaceId && !boardId) {
       return { error: "Must provide either workspaceId or boardId" };
+    }
+
+    // Check if user already exists
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
+
+    // If user exists, add them directly
+    if (existingUser) {
+      // Check if user is already a member
+      if (workspaceId) {
+        const [existingMember] = await db
+          .select()
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, workspaceId),
+              eq(workspaceMembers.userId, existingUser.id)
+            )
+          );
+        
+        if (existingMember) {
+          return {
+            success: false,
+            error: "Already a member",
+            message: `${email} is already a member of this workspace`
+          };
+        }
+      } else if (boardId) {
+        const [existingMember] = await db
+          .select()
+          .from(boardMembers)
+          .where(
+            and(
+              eq(boardMembers.boardId, boardId),
+              eq(boardMembers.userId, existingUser.id)
+            )
+          );
+        
+        if (existingMember) {
+          return {
+            success: false,
+            error: "Already a member",
+            message: `${email} is already a member of this board`
+          };
+        }
+      }
+
+      // Add user directly and create notification
+      const result = await db.transaction(async (tx) => {
+        let contextName = "";
+        let contextType: "workspace" | "board" = "workspace";
+
+        // Add to workspace or board
+        if (workspaceId) {
+          contextType = "workspace";
+          const [ws] = await tx.select().from(workspaces).where(eq(workspaces.id, workspaceId));
+          if (!ws) return { error: "Workspace not found" };
+          contextName = ws.name;
+
+          await tx.insert(workspaceMembers).values({
+            workspaceId,
+            userId: existingUser.id,
+            role: role || "member",
+          });
+        } else if (boardId) {
+          contextType = "board";
+          const [board] = await tx.select().from(boards).where(eq(boards.id, boardId));
+          if (!board) return { error: "Board not found" };
+          contextName = board.name;
+
+          await tx.insert(boardMembers).values({
+            boardId,
+            userId: existingUser.id,
+            role: role || "member",
+          });
+        }
+
+        // Create activity record
+        const [activity] = await tx.insert(activities).values({
+          userId: user.id,
+          workspaceId: workspaceId || (await tx.select().from(boards).where(eq(boards.id, boardId!))).map(b => b.workspaceId)[0],
+          boardId: boardId || null,
+          action: "add",
+          entityType: "member",
+          entityId: existingUser.id,
+          entityName: existingUser.name || existingUser.email,
+          metadata: {
+            addedBy: user.id,
+            addedByName: user.name || user.email,
+            role: role || "member"
+          }
+        }).returning();
+
+        // Create notification for the added user
+        await tx.insert(notifications).values({
+          recipientId: existingUser.id,
+          activityId: activity.id,
+          isRead: false,
+        });
+
+        return {
+          success: true,
+          method: "direct_add",
+          message: `${existingUser.name || email} already has an account and has been added directly to the ${contextType}`,
+          user: {
+            id: existingUser.id,
+            name: existingUser.name,
+            email: existingUser.email,
+          },
+          contextName,
+          contextType
+        };
+      });
+
+      // Send email notification to the added user (outside transaction)
+      if (result.success && result.method === "direct_add") {
+        const workspaceUrl = workspaceId 
+          ? `${process.env.FRONTEND_URL || 'http://localhost:5173'}/workspace/${workspaceId}`
+          : `${process.env.FRONTEND_URL || 'http://localhost:5173'}/board/${boardId}`;
+
+        await sendDirectAddEmail({
+          email: existingUser.email,
+          inviterName: user.name || user.email,
+          contextName: result.contextName,
+          type: result.contextType,
+          workspaceUrl
+        });
+      }
+
+      return result;
+    }
+
+    // User doesn't exist - proceed with email invitation
+    // Check for existing pending invitation
+    const existingConditions = [
+      eq(invitations.email, email),
+      eq(invitations.status, 'pending'),
+      gt(invitations.expiresAt, new Date())
+    ];
+    
+    if (workspaceId) {
+      existingConditions.push(eq(invitations.workspaceId, workspaceId));
+    }
+    if (boardId) {
+      existingConditions.push(eq(invitations.boardId, boardId));
+    }
+
+    const [existingInvitation] = await db
+      .select()
+      .from(invitations)
+      .where(and(...existingConditions));
+
+    if (existingInvitation) {
+      const daysLeft = Math.ceil((new Date(existingInvitation.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      return { 
+        error: "Invitation already sent", 
+        message: `An invitation has already been sent to ${email}. It expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}. Please wait for them to accept or for the invitation to expire before sending a new one.`,
+        existingInvitation: {
+          id: existingInvitation.id,
+          expiresAt: existingInvitation.expiresAt,
+          createdAt: existingInvitation.createdAt
+        }
+      };
     }
 
     // Generate secure token
@@ -88,13 +252,19 @@ export const invitationRoutes = new Elysia({ prefix: "/invitations" })
     // Send email
     const emailSent = await sendInviteEmail({
       email,
-      inviteLink: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/accept-invite/${token}`, // Make sure this env var exists or default
-      inviterName: user.fullName || user.email,
+      inviteLink: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/accept-invite/${token}`,
+      inviterName: user.name || user.email,
       contextName,
       type
     });
 
-    return { success: true, invitation, emailSent };
+    return { 
+      success: true, 
+      method: "email_invitation",
+      message: `Invitation email sent to ${email}`,
+      invitation, 
+      emailSent 
+    };
   }, {
     auth: true,
     body: t.Object({

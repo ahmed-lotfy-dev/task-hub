@@ -88,13 +88,9 @@ export function TaskDetailSidebar({
                               onAssign(candidate.id);
                             }
                           }}
-                          onPointerDown={(e) => {
-                            // Prevent default to avoid focus loss, but allow click to propagate
-                            e.preventDefault();
-                          }}
                           className="rounded-xl h-11 px-3 cursor-pointer aria-selected:bg-zinc-100 data-[selected=true]:bg-zinc-100"
                         >
-                          <div className="flex items-center gap-3 flex-1 pointer-events-none">
+                          <div className="flex items-center gap-3 flex-1">
                             <Avatar className="w-6 h-6 ring-2 ring-zinc-50">
                               <AvatarImage src={candidate.image} />
                               <AvatarFallback className="text-[10px] font-bold bg-zinc-100 text-zinc-600">

@@ -36,18 +36,36 @@ export function InviteDialog({ workspaceId, boardId, trigger }: InviteDialogProp
 
   const inviteMutation = useMutation({
     mutationFn: async (json: any) => {
-      return apiFetch("/api/invitations", {
+      const response: any = await apiFetch("/api/invitations", {
         method: "POST",
         body: JSON.stringify(json),
       });
+      // Check if response contains an error
+      if (response.error) {
+        throw new Error(response.message || response.error);
+      }
+      return response;
     },
-    onSuccess: () => {
-      toast.success("Invitation sent successfully!");
+    onSuccess: (data: any) => {
+      if (data.method === "direct_add") {
+        toast.success(data.message, {
+          duration: 5000,
+        });
+      } else {
+        toast.success(data.message || "Invitation sent successfully!");
+      }
       setOpen(false);
       setEmail("");
     },
     onError: (error: Error) => {
-      toast.error(`Failed to send invitation: ${error.message}`);
+      // Check if this is a duplicate invitation error
+      if (error.message.includes("Invitation already sent")) {
+        toast.warning(error.message, {
+          duration: 6000,
+        });
+      } else {
+        toast.error(`Failed to send invitation: ${error.message}`);
+      }
     },
   });
 
@@ -77,7 +95,7 @@ export function InviteDialog({ workspaceId, boardId, trigger }: InviteDialogProp
         <DialogHeader>
           <DialogTitle>Invite to {workspaceId ? "Workspace" : "Board"}</DialogTitle>
           <DialogDescription>
-            Send an email invitation to collaborate on this {workspaceId ? "workspace" : "board"}.
+            Users with existing accounts will be added directly. New users will receive an email invitation.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
