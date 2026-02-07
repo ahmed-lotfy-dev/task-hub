@@ -63,7 +63,8 @@ export const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: false,
     },
-    useSecureCookies: process.env.NODE_ENV === "production" || process.env.BETTER_AUTH_URL?.startsWith("https://"),
+    // Only use secure cookies if we are on HTTPS
+    useSecureCookies: process.env.BETTER_AUTH_URL?.startsWith("https://") && process.env.NODE_ENV === "production",
     trustedProxyHeaders: true,
   },
   account: {

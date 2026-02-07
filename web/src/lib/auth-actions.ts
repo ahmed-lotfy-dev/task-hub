@@ -1,21 +1,16 @@
-// Removed next/headers
 import { authClient } from "./auth-client";
 
-const baseURL = process.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+const baseURL = process.env.VITE_BACKEND_API_URL || "https://api.ahmedlotfy.site";
 
 /**
- * Server-side authentication actions
- * These run on the server and can access cookies/headers
+ * Standard utility to fetch session data with optional cookie forwarding.
+ * Useful for checking session status in components or custom hooks.
  */
-
-export async function getSession() {
+export async function getSession(cookie?: string) {
   try {
-    // const headersList = await headers();
-    const cookie = ""; // Placeholder, will fix with TanStack Server Functions
-
     const response = await fetch(`${baseURL}/api/auth/get-session`, {
       headers: {
-        cookie: cookie,
+        cookie: cookie || "",
       },
       credentials: "include",
     });
@@ -31,6 +26,10 @@ export async function getSession() {
   }
 }
 
+/**
+ * Client-side Sign In with Email
+ * Note: Support for email/password is removed from UI but kept in logic for potential future use.
+ */
 export async function signInWithEmail(email: string, password: string) {
   try {
     const result = await authClient.signIn.email({
@@ -49,6 +48,9 @@ export async function signInWithEmail(email: string, password: string) {
   }
 }
 
+/**
+ * Client-side Sign Up with Email
+ */
 export async function signUpWithEmail(
   email: string,
   password: string,
@@ -73,18 +75,21 @@ export async function signUpWithEmail(
   }
 }
 
+/**
+ * Sign In with Google
+ * callbackURL defaults to absolute /home on the client
+ */
 export async function signInWithGoogle(callbackURL?: string) {
   try {
     const result = await authClient.signIn.social({
       provider: "google",
-      callbackURL: callbackURL || "/",
+      callbackURL: callbackURL || `${window.location.origin}/home`,
     });
 
     if (result.error) {
       return { success: false, error: result.error.message };
     }
 
-    // For OAuth, this will redirect, so we won't reach here
     return { success: true, data: result.data };
   } catch (error) {
     console.error("Google sign in failed:", error);
@@ -92,6 +97,9 @@ export async function signInWithGoogle(callbackURL?: string) {
   }
 }
 
+/**
+ * Sign Out User
+ */
 export async function signOutUser() {
   try {
     const result = await authClient.signOut();
@@ -106,5 +114,3 @@ export async function signOutUser() {
     return { success: false, error: "An unexpected error occurred" };
   }
 }
-
-

@@ -33,8 +33,7 @@ function LoginPage() {
   const navigate = useNavigate()
   const { redirect } = Route.useSearch()
   const { data: session, isPending: isSessionPending } = useSession()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSocialLoading, setIsSocialLoading] = useState(false)
+  const [activeProvider, setActiveProvider] = useState<'google' | 'github' | null>(null)
 
   // Redirect if already logged in
   useEffect(() => {
@@ -43,46 +42,23 @@ function LoginPage() {
     }
   }, [session, isSessionPending, navigate, redirect])
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
-  })
-
-  const onSubmit = async (values: LoginValues) => {
-    setIsLoading(true)
-    try {
-      const { error } = await authClient.signIn.email({
-        email: values.email,
-        password: values.password,
-      })
-
-      if (error) {
-        toast.error(error.message || 'Invalid credentials')
-        return
-      }
-
-      toast.success('Signed in successfully!')
-      navigate({ to: redirect || '/home' })
-    } catch (err) {
-      toast.error('An unexpected error occurred')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const handleSocialSignIn = async (provider: 'google' | 'github') => {
-    setIsSocialLoading(true)
+    setActiveProvider(provider)
     try {
+      // Ensure the callback URL is absolute to avoid redirecting to the API domain
+      const baseUrl = window.location.origin
+      const redirectPath = redirect || '/home'
+      const callbackURL = redirectPath.startsWith('http') ? redirectPath : `${baseUrl}${redirectPath}`
+
+      console.log(`[Login] Redirecting to ${provider} with callbackURL: ${callbackURL}`)
+
       await authClient.signIn.social({
         provider,
-        callbackURL: redirect || `${window.location.origin}/home`,
+        callbackURL: callbackURL,
       })
     } catch (err) {
       toast.error(`Failed to sign in with ${provider}`)
-      setIsSocialLoading(false)
+      setActiveProvider(null)
     }
   }
 
@@ -91,54 +67,17 @@ function LoginPage() {
       <Card className="w-full max-w-md shadow-xl border-zinc-100">
         <CardHeader className="space-y-1">
           <CardTitle className="text-3xl font-bold tracking-tight">Sign in</CardTitle>
-          <p className="text-muted-foreground font-medium">Welcome back! Please enter your details</p>
+          <p className="text-muted-foreground font-medium">Welcome back! Please choose a provider</p>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-zinc-700">Email</label>
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="you@example.com"
-                className={`w-full px-4 py-3 rounded-xl border bg-zinc-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 ${errors.email ? 'border-red-500 focus:ring-red-500/10' : 'border-zinc-200 focus:border-primary'
-                  }`}
-              />
-              {errors.email && <p className="text-xs font-bold text-red-500 mt-1">{errors.email.message}</p>}
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-zinc-700">Password</label>
-              <input
-                {...register('password')}
-                type="password"
-                placeholder="••••••••"
-                className={`w-full px-4 py-3 rounded-xl border bg-zinc-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 ${errors.password ? 'border-red-500 focus:ring-red-500/10' : 'border-zinc-200 focus:border-primary'
-                  }`}
-              />
-              {errors.password && <p className="text-xs font-bold text-red-500 mt-1">{errors.password.message}</p>}
-            </div>
-            <Button type="submit" className="w-full py-6 text-lg font-bold shadow-lg" disabled={isLoading}>
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
-            </Button>
-          </form>
-
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-zinc-100" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-4 text-zinc-400 font-bold tracking-widest">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+        <CardContent className="space-y-6">
+          <div className="grid gap-4">
             <Button
               variant="outline"
-              className="py-6 font-bold flex items-center justify-center gap-3 border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95"
+              className="py-6 font-bold flex items-center justify-center gap-3 border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95 text-lg"
               onClick={() => handleSocialSignIn('google')}
-              disabled={isSocialLoading}
+              disabled={!!activeProvider}
             >
-              {isSocialLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+              {activeProvider === 'google' ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
                     fill="#EA4335"
@@ -146,25 +85,22 @@ function LoginPage() {
                   />
                 </svg>
               )}
-              Google
+              Continue with Google
             </Button>
             <Button
               variant="outline"
-              className="py-6 font-bold flex items-center justify-center gap-3 border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95"
+              className="py-6 font-bold flex items-center justify-center gap-3 border-zinc-200 hover:bg-zinc-50 transition-all active:scale-95 text-lg"
               onClick={() => handleSocialSignIn('github')}
-              disabled={isSocialLoading}
+              disabled={!!activeProvider}
             >
-              {isSocialLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Github className="w-5 h-5" />}
-              GitHub
+              {activeProvider === 'github' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Github className="w-5 h-5" />}
+              Continue with GitHub
             </Button>
           </div>
         </CardContent>
         <CardFooter className="flex justify-center border-t border-zinc-50 pt-6">
           <p className="text-sm font-medium text-zinc-500">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-primary font-bold hover:underline">
-              Create account
-            </Link>
+            By signing in, you agree to our Terms of Service.
           </p>
         </CardFooter>
       </Card>

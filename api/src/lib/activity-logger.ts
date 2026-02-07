@@ -5,7 +5,7 @@ export interface LogActivityParams {
   userId: string;
   workspaceId: string;
   boardId?: string;
-  action: 'create' | 'update' | 'delete' | 'move' | 'archive' | 'unarchive' | 'comment';
+  action: 'create' | 'update' | 'delete' | 'move' | 'archive' | 'unarchive' | 'comment' | 'assign';
   entityType: 'workspace' | 'board' | 'list' | 'card' | 'comment';
   entityId: string;
   entityName?: string;
@@ -31,10 +31,15 @@ export async function logActivity(params: LogActivityParams) {
       })
       .returning();
 
+    import("./notification-service").then(({ notificationService }) => {
+      notificationService.createNotificationsForActivity(activity).catch(err => {
+        console.error("Failed to create notifications:", err);
+      });
+    });
+
     return activity;
   } catch (error) {
     console.error("Failed to log activity:", error);
-    // We don't want to throw error and break the main request
     return null;
   }
 }
