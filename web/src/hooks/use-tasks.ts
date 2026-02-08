@@ -5,6 +5,7 @@ import { Card as Task } from "@taskflow/shared";
 export type TaskWithComments = Task & {
   commentCount?: number;
   assignees?: { id: string; name: string; image: string | null }[];
+  labels?: { id: string; name: string; color: string }[];
 };
 
 export function useTasks(boardId?: string) {
