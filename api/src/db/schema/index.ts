@@ -41,3 +41,6 @@ export {
   invitationStatusEnum,
   invitationRoleEnum,
 } from './invitations';
+
+// Relations
+export * from './relations';
