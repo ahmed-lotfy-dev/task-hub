@@ -148,7 +148,7 @@ export function BoardPage() {
   const bgStyle = {
     background: (board?.background as any)?.type === 'image'
       ? `url(${(board?.background as any).value}) center center / cover no-repeat`
-      : ((board?.background as any)?.value || '#f8fafc'), // Premium Off-White (Slate 50)
+      : ((board?.background as any)?.value || '#f4f4f5'), // Zinc-100 (Clean Light Gray)
   };
 
   return (
