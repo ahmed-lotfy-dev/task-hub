@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus, Globe, LayoutGrid } from "lucide-react";
 
 interface InviteDialogProps {
   workspaceId?: string;
@@ -34,13 +34,14 @@ export function InviteDialog({ workspaceId, boardId, trigger }: InviteDialogProp
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("member");
 
+  const isWorkspaceInvite = !!workspaceId && !boardId;
+
   const inviteMutation = useMutation({
     mutationFn: async (json: any) => {
       const response: any = await apiFetch("/api/invitations", {
         method: "POST",
         body: JSON.stringify(json),
       });
-      // Check if response contains an error
       if (response.error) {
         throw new Error(response.message || response.error);
       }
@@ -58,7 +59,6 @@ export function InviteDialog({ workspaceId, boardId, trigger }: InviteDialogProp
       setEmail("");
     },
     onError: (error: Error) => {
-      // Check if this is a duplicate invitation error
       if (error.message.includes("Invitation already sent")) {
         toast.warning(error.message, {
           duration: 6000,
@@ -91,44 +91,92 @@ export function InviteDialog({ workspaceId, boardId, trigger }: InviteDialogProp
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>Invite to {workspaceId ? "Workspace" : "Board"}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            {isWorkspaceInvite ? (
+              <>
+                <Globe className="w-5 h-5" />
+                Invite to Workspace
+              </>
+            ) : (
+              <>
+                <LayoutGrid className="w-5 h-5" />
+                Invite to Board
+              </>
+            )}
+          </DialogTitle>
           <DialogDescription>
-            Users with existing accounts will be added directly. New users will receive an email invitation.
+            {isWorkspaceInvite ? (
+              <>
+                This will give the user access to <span className="font-medium">all boards</span> in this workspace.
+                They'll be able to view and edit tasks across the entire workspace.
+              </>
+            ) : (
+              <>
+                This will give the user access to <span className="font-medium">only this board</span>.
+                They'll not have access to other boards in this workspace.
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right">
-              Email
-            </Label>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email address</Label>
             <Input
               id="email"
               type="email"
               placeholder="colleague@example.com"
-              className="col-span-3"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="role" className="text-right">
-              Role
-            </Label>
+          
+          <div className="space-y-2">
+            <Label htmlFor="role">Role</Label>
             <Select value={role} onValueChange={setRole}>
-              <SelectTrigger className="col-span-3">
+              <SelectTrigger>
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="member">Member</SelectItem>
-                <SelectItem value="observer">Observer (Read-only)</SelectItem>
-                {workspaceId && <SelectItem value="admin">Admin</SelectItem>}
+                <SelectItem value="member">
+                  <div className="flex items-center gap-2">
+                    <span>Member</span>
+                    <span className="text-muted-foreground text-xs">Can edit</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="observer">
+                  <div className="flex items-center gap-2">
+                    <span>Observer</span>
+                    <span className="text-muted-foreground text-xs">View only</span>
+                  </div>
+                </SelectItem>
+                {isWorkspaceInvite && (
+                  <SelectItem value="admin">
+                    <div className="flex items-center gap-2">
+                      <span>Admin</span>
+                      <span className="text-muted-foreground text-xs">Full access</span>
+                    </div>
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter className="col-span-4">
+
+          <div className="bg-muted/50 p-3 rounded-md text-sm text-muted-foreground">
+            {isWorkspaceInvite ? (
+              <p>
+                <strong>Workspace invite:</strong> User gets access to all boards and can be invited to specific boards.
+              </p>
+            ) : (
+              <p>
+                <strong>Board-only invite:</strong> User only sees this board. For full workspace access, invite at workspace level.
+              </p>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2 sm:justify-end">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
@@ -136,7 +184,7 @@ export function InviteDialog({ workspaceId, boardId, trigger }: InviteDialogProp
               {inviteMutation.isPending && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              Send Invitation
+              {inviteMutation.isPending ? "Sending..." : "Send Invitation"}
             </Button>
           </DialogFooter>
         </form>
