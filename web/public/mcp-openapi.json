@@ -1,0 +1,339 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "TaskHub MCP Tools",
+    "description": "JSON-RPC 2.0 based Model Context Protocol tools for TaskHub. All requests use the single /mcp endpoint.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.ahmedlotfy.site",
+      "description": "Production Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/mcp#whoami": {
+      "post": {
+        "summary": "Authentication: whoami",
+        "tags": ["Auth"],
+        "operationId": "mcp_whoami",
+        "description": "Get authenticated user information from the API key.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "whoami" },
+                      "arguments": { "type": "object", "example": {} }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#list_workspaces": {
+      "post": {
+        "summary": "Workspace: list_workspaces",
+        "tags": ["Workspaces"],
+        "operationId": "mcp_list_workspaces",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "list_workspaces" },
+                      "arguments": { "type": "object", "example": {} }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#get_workspace": {
+      "post": {
+        "summary": "Workspace: get_workspace",
+        "tags": ["Workspaces"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "get_workspace" },
+                      "arguments": {
+                        "type": "object",
+                        "properties": {
+                          "workspaceId": { "type": "string", "format": "uuid" },
+                          "slug": { "type": "string" }
+                        }
+                      }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#create_workspace": {
+      "post": {
+        "summary": "Workspace: create_workspace",
+        "tags": ["Workspaces"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "create_workspace" },
+                      "arguments": {
+                        "type": "object",
+                        "required": ["name"],
+                        "properties": {
+                          "name": { "type": "string" },
+                          "description": { "type": "string" },
+                          "visibility": { "type": "string", "enum": ["private", "team", "public"] }
+                        }
+                      }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#get_workspace_boards": {
+      "post": {
+        "summary": "Board: get_workspace_boards",
+        "tags": ["Boards"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "get_workspace_boards" },
+                      "arguments": {
+                        "type": "object",
+                        "required": ["workspaceId"],
+                        "properties": {
+                          "workspaceId": { "type": "string", "format": "uuid" }
+                        }
+                      }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#create_board": {
+      "post": {
+        "summary": "Board: create_board",
+        "tags": ["Boards"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "create_board" },
+                      "arguments": {
+                        "type": "object",
+                        "required": ["workspaceId", "name"],
+                        "properties": {
+                          "workspaceId": { "type": "string", "format": "uuid" },
+                          "name": { "type": "string" },
+                          "description": { "type": "string" },
+                          "template": { "type": "string", "enum": ["kanban", "scrum", "blank"] }
+                        }
+                      }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#create_list": {
+      "post": {
+        "summary": "Board: create_list",
+        "tags": ["Boards"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "create_list" },
+                      "arguments": {
+                        "type": "object",
+                        "required": ["boardId", "workspaceId", "name"],
+                        "properties": {
+                          "boardId": { "type": "string", "format": "uuid" },
+                          "workspaceId": { "type": "string", "format": "uuid" },
+                          "name": { "type": "string" },
+                          "position": { "type": "integer" }
+                        }
+                      }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#get_board_tasks": {
+      "post": {
+        "summary": "Task: get_board_tasks",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "get_board_tasks" },
+                      "arguments": {
+                        "type": "object",
+                        "required": ["boardId"],
+                        "properties": {
+                          "boardId": { "type": "string", "format": "uuid" }
+                        }
+                      }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/mcp#create_task": {
+      "post": {
+        "summary": "Task: create_task",
+        "tags": ["Tasks"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": { "type": "string", "example": "2.0" },
+                  "method": { "type": "string", "example": "tools/call" },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string", "example": "create_task" },
+                      "arguments": {
+                        "type": "object",
+                        "required": ["workspaceId", "boardId", "listId", "title"],
+                        "properties": {
+                          "workspaceId": { "type": "string", "format": "uuid" },
+                          "boardId": { "type": "string", "format": "uuid" },
+                          "listId": { "type": "string", "format": "uuid" },
+                          "title": { "type": "string" },
+                          "description": { "type": "string" },
+                          "priority": { "type": "string", "enum": ["low", "medium", "high"] }
+                        }
+                      }
+                    }
+                  },
+                  "id": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}

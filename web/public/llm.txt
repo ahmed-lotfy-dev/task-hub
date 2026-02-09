@@ -1,0 +1,107 @@
+# TaskHub MCP Server
+
+> AI-powered task management with Model Context Protocol integration
+
+## Overview
+
+TaskHub is a collaborative task management platform with a built-in MCP (Model Context Protocol) server. It allows AI assistants to manage tasks, workspaces, and boards programmatically using the authenticated user's context.
+
+**Base URL**: https://api.ahmedlotfy.site
+**MCP Endpoint**: https://api.ahmedlotfy.site/mcp
+**API Documentation**: https://api.ahmedlotfy.site/docs
+**MCP OpenAPI Spec**: https://api.ahmedlotfy.site/mcp-openapi.json
+
+## Authentication
+
+All MCP requests require Bearer token authentication.
+
+**Header Format**:
+```
+Authorization: Bearer th_live_YOUR_API_KEY
+```
+
+**CRITICAL**: The server automatically identifies the user from the API key. You **do not** need to pass `userId` as an argument to any tool.
+
+## MCP Server Configuration
+
+### Stateless Mode
+The server operates in stateless mode.
+
+**Connection Details**:
+- **Transport**: HTTP
+- **URL**: https://api.ahmedlotfy.site/mcp
+- **Authentication**: Bearer token
+
+### Example MCP Configuration
+```json
+{
+  "mcpServers": {
+    "taskhub": {
+      "type": "http",
+      "url": "https://api.ahmedlotfy.site/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}
+```
+
+## Available MCP Tools (13 total)
+
+### Authentication
+- **whoami**: Get authenticated user information
+  - Args: `{}` (None)
+
+### Workspace Management
+- **list_workspaces**: List all workspaces for the authenticated user
+  - Args: `{}`
+- **get_workspace**: Get workspace details
+  - Args: `workspaceId` or `slug`
+- **create_workspace**: Create new workspace
+  - Args: `name`, `description?`, `visibility?`
+- **update_workspace**: Update workspace
+  - Args: `workspaceId`, `name?`, `description?`, `visibility?`
+- **delete_workspace**: Delete workspace
+  - Args: `workspaceId`
+- **get_workspace_members**: List workspace members
+  - Args: `workspaceId`
+
+### Board Management
+- **get_workspace_boards**: List boards in workspace
+  - Args: `workspaceId`
+- **create_board**: Create new board
+  - Args: `workspaceId`, `name`, `description?`, `visibility?`, `template?`
+- **create_list**: Create list on board
+  - Args: `boardId`, `workspaceId`, `name`, `position?`
+- **list_board_lists**: List all lists in board
+  - Args: `boardId`
+
+### Task Management
+- **get_board_tasks**: Get all tasks in board
+  - Args: `boardId`
+- **create_task**: Create new task
+  - Args: `workspaceId`, `boardId`, `listId`, `title`, `description?`, `priority?`
+
+## MCP Request Format
+
+```http
+POST https://api.ahmedlotfy.site/mcp
+Content-Type: application/json
+Accept: application/json, text/event-stream
+Authorization: Bearer YOUR_API_KEY
+
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "TOOL_NAME",
+    "arguments": { ... }
+  },
+  "id": 1
+}
+```
+
+---
+
+Last updated: 2026-02-07
