@@ -14,6 +14,7 @@ import { notificationRoutes } from "./routes/notifications";
 import { memberRoutes } from "./routes/members";
 import { betterAuth } from "./middleware/auth-middleware";
 import { mcpServer } from "./mcp";
+import llmText from "./llm.txt";
 
 const app = new Elysia()
   .use(openapi({ scalar: true, documentation: { info: { title: "Task Deck API", version: "1.0.0" } }, path: "/docs" }))
@@ -46,6 +47,7 @@ const app = new Elysia()
         auth: true,
       })
   )
+  .get("/llm.txt", () => llmText)
   .get("/", () => "Hello From Elysia")
   .get("/health", () => ({ status: "ok" }))
   .listen(process.env.PORT || 8000);
