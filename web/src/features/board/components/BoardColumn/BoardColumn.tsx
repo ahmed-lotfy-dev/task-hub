@@ -1,12 +1,23 @@
 "use client";
 
-import { Plus, MoreHorizontal } from "lucide-react";
+import { Plus, MoreHorizontal, Trash2, Edit2, X, Check } from "lucide-react";
 import { useState } from "react";
 import { AddCardForm } from "./AddCardForm";
 import { useParams } from "react-router";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
+import { toast } from "sonner";
 
 interface BoardColumnProps {
   id: string;
@@ -18,7 +29,11 @@ interface BoardColumnProps {
 
 export function BoardColumn({ id, title, count, children }: BoardColumnProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(title);
   const { boardId } = useParams();
+  const queryClient = useQueryClient();
+
   const { setNodeRef } = useDroppable({
     id: id,
     disabled: !id,
@@ -28,43 +43,153 @@ export function BoardColumn({ id, title, count, children }: BoardColumnProps) {
     },
   });
 
+  const updateListMutation = useMutation({
+    mutationFn: async (name: string) => {
+      return apiFetch(`/api/lists/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ name }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lists", boardId] });
+      toast.success("Column renamed");
+      setIsEditing(false);
+    },
+    onError: () => {
+      toast.error("Failed to rename column");
+    },
+  });
+
+  const deleteListMutation = useMutation({
+    mutationFn: async () => {
+      return apiFetch(`/api/lists/${id}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lists", boardId] });
+      toast.success("Column deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete column");
+    },
+  });
+
+  const handleRename = () => {
+    if (editName.trim() && editName !== title) {
+      updateListMutation.mutate(editName.trim());
+    } else {
+      setIsEditing(false);
+      setEditName(title);
+    }
+  };
+
+  const handleDelete = () => {
+    if (confirm(`Are you sure you want to delete "${title}"? All tasks in this column will be deleted.`)) {
+      deleteListMutation.mutate();
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        "flex flex-col shrink-0 w-70 h-full max-h-full rounded-2xl",
-        "bg-white/40 dark:bg-black/40 backdrop-blur-xl", // Enhanced Glass
-        "border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]", // Neo-Glass Shadow
+        "flex flex-col shrink-0 w-[280px] h-full max-h-full rounded-2xl",
+        "bg-white/40 dark:bg-black/40 backdrop-blur-xl",
+        "border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]",
         "transition-colors duration-200"
       )}
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 pb-3 group">
-        <div className="flex items-center gap-3 overflow-hidden">
-          <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-5 tracking-tight font-sans">
-            {title}
-          </h3>
-          <span className="flex items-center justify-center min-w-5 h-5 px-2 text-[11px] font-bold text-cyan-700 bg-cyan-100/80 dark:text-cyan-300 dark:bg-cyan-900/50 rounded-full shadow-sm ring-1 ring-cyan-500/10">
-            {count}
-          </span>
-          <button
-            onClick={() => setIsCreateOpen(true)}
-            className="p-1 rounded-full hover:bg-white/50 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all text-slate-500 hover:text-cyan-600 active:scale-95"
-            aria-label="Quick add task"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="flex items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 hover:bg-white/50 dark:hover:bg-white/10 text-slate-400 hover:text-slate-700 transition-all"
-            aria-label="List actions"
-          >
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
-        </div>
+        {isEditing ? (
+          <div className="flex items-center gap-2 flex-1">
+            <Input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleRename();
+                if (e.key === "Escape") {
+                  setIsEditing(false);
+                  setEditName(title);
+                }
+              }}
+              className="h-8 text-sm"
+              autoFocus
+            />
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8"
+              onClick={handleRename}
+              disabled={updateListMutation.isPending}
+            >
+              <Check className="w-4 h-4 text-green-600" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8"
+              onClick={() => {
+                setIsEditing(false);
+                setEditName(title);
+              }}
+            >
+              <X className="w-4 h-4 text-red-600" />
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-3 overflow-hidden">
+              <h3 
+                className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-5 tracking-tight font-sans cursor-pointer hover:text-cyan-600"
+                onClick={() => setIsEditing(true)}
+                title="Click to rename"
+              >
+                {title}
+              </h3>
+              <span className="flex items-center justify-center min-w-[20px] h-5 px-2 text-[11px] font-bold text-cyan-700 bg-cyan-100/80 dark:text-cyan-300 dark:bg-cyan-900/50 rounded-full shadow-sm ring-1 ring-cyan-500/10">
+                {count}
+              </span>
+              <button
+                onClick={() => setIsCreateOpen(true)}
+                className="p-1 rounded-full hover:bg-white/50 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all text-slate-500 hover:text-cyan-600 active:scale-95"
+                aria-label="Quick add task"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-white/50 dark:hover:bg-white/10 text-slate-400 hover:text-slate-700 transition-all"
+                    aria-label="List actions"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                    <Edit2 className="w-4 h-4 mr-2" />
+                    Rename
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleDelete}
+                    className="text-red-600 focus:text-red-600"
+                    disabled={deleteListMutation.isPending}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Tasks Scrollable Area */}
