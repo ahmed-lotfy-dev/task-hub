@@ -1,8 +1,5 @@
 import { Elysia, t } from "elysia";
-import { db } from "../db/db";
-import { apiKeys } from "../db/schema";
-import { eq, and } from "drizzle-orm";
-import { generateKey } from "../lib/api-key-utils";
+import { ApiKeyService } from "../services/api-key.service";
 import { User } from "@taskflow/shared";
 import { betterAuth } from "../middleware/auth-middleware";
 
@@ -10,21 +7,7 @@ export const apiKeyRoutes = new Elysia({ prefix: "/api-keys" })
   .use(betterAuth)
   .get("/", async (context: any) => {
     const user = context.user as User;
-    console.log(`[API Keys] Listing keys for user: "${user.id}" (email: ${user.email})`);
-
-    const results = await db
-      .select({
-        id: apiKeys.id,
-        name: apiKeys.name,
-        preview: apiKeys.preview,
-        expiresAt: apiKeys.expiresAt,
-        lastUsedAt: apiKeys.lastUsedAt,
-        createdAt: apiKeys.createdAt,
-      })
-      .from(apiKeys)
-      .where(eq(apiKeys.userId, user.id.trim()));
-
-    console.log(`[API Keys] DB Results for user "${user.id.trim()}": ${JSON.stringify(results.map(r => ({ id: r.id, name: r.name })), null, 2)}`);
+    const results = await ApiKeyService.listKeys(user.id);
 
     return results.map(key => ({
       ...key,
@@ -38,28 +21,12 @@ export const apiKeyRoutes = new Elysia({ prefix: "/api-keys" })
   })
   .post("/", async (context: any) => {
     const user = context.user as User;
-    console.log(`[API Keys] Creating key for user: "${user.id}" (email: ${user.email})`);
-    const body = context.body as { name: string; expiresInDays?: number };
-    const { name, expiresInDays } = body;
-    const { key, hash, preview } = await generateKey();
+    const { name, expiresInDays } = context.body;
 
-    const expiresAt = expiresInDays
-      ? new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000)
-      : null;
-
-    const [newKey] = await db.insert(apiKeys).values({
-      userId: user.id.trim(),
-      name,
-      key: hash,
-      preview,
-      expiresAt,
-    }).returning();
-
-    console.log(`[API Keys] Created key "${name}" with ID: ${newKey.id} for user: ${user.id}`);
+    const newKey = await ApiKeyService.createKey(user.id, name, expiresInDays);
 
     return {
       ...newKey,
-      key,
       createdAt: newKey.createdAt.toISOString(),
       updatedAt: newKey.updatedAt.toISOString(),
       expiresAt: newKey.expiresAt?.toISOString() ?? null,
@@ -72,15 +39,37 @@ export const apiKeyRoutes = new Elysia({ prefix: "/api-keys" })
     }),
     detail: { summary: "Create API key" }
   })
+  .post("/:id/regenerate", async (context: any) => {
+    const user = context.user as User;
+    const { id } = context.params;
+
+    const newKey = await ApiKeyService.regenerateKey(user.id, id);
+
+    if (!newKey) {
+      context.set.status = 404;
+      return { message: "API Key not found" };
+    }
+
+    return {
+      ...newKey,
+      createdAt: newKey.createdAt.toISOString(),
+      updatedAt: newKey.updatedAt.toISOString(),
+      expiresAt: newKey.expiresAt?.toISOString() ?? null,
+    };
+  }, {
+    auth: true,
+    params: t.Object({
+      id: t.String(),
+    }),
+    detail: { summary: "Regenerate API key" }
+  })
   .delete("/:id", async (context: any) => {
     const user = context.user as User;
     const { id } = context.params;
-    const result = await db
-      .delete(apiKeys)
-      .where(and(eq(apiKeys.id, id), eq(apiKeys.userId, user.id)))
-      .returning();
 
-    if (result.length === 0) {
+    const deleted = await ApiKeyService.revokeKey(user.id, id);
+
+    if (!deleted) {
       context.set.status = 404;
       return { message: "API Key not found" };
     }
@@ -93,3 +82,4 @@ export const apiKeyRoutes = new Elysia({ prefix: "/api-keys" })
     }),
     detail: { summary: "Revoke API key" }
   });
+
