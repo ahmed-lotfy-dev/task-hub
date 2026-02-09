@@ -14,13 +14,18 @@ export const activityRoutes = new Elysia({ prefix: "/activities" })
   .use(betterAuth)
   // Get workspace activities (excluding soft-deleted by default)
   .get("/", async (context: any) => {
-    const user = context.user as User;
-    const includeDeleted = context.query?.includeDeleted === 'true';
-    const limit = context.query?.limit ? parseInt(context.query.limit) : 20;
+    try {
+      const user = context.user as User;
+      const includeDeleted = context.query?.includeDeleted === 'true';
+      const limit = context.query?.limit ? parseInt(context.query.limit) : 20;
 
-    const data = await ActivityService.getWorkspaceActivities(user.id, limit, includeDeleted);
+      const data = await ActivityService.getWorkspaceActivities(user.id, limit, includeDeleted);
 
-    return data.map(serializeActivity);
+      return data.map(serializeActivity);
+    } catch (error: any) {
+      console.error('[Activities] Error fetching workspace activities:', error);
+      return context.error(500, { error: 'Failed to fetch activities', details: error.message });
+    }
   }, {
     auth: true,
     query: t.Object({
