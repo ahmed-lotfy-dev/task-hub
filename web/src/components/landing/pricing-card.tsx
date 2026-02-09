@@ -41,8 +41,8 @@ export function PricingCard({
         <span className="text-muted-foreground font-bold">/mo</span>
       </div>
       <Button
-        variant={popular ? "default" : "white"}
-        className="w-full py-4 text-base font-bold shadow-md cursor-pointer"
+        variant={popular ? "default" : "outline"}
+        className="w-full py-4 text-base font-bold cursor-pointer"
         onClick={onSelect}
       >
         Get Started

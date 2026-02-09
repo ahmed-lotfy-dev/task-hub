@@ -12,39 +12,46 @@ interface HeroSectionProps {
 
 export function HeroSection({ onGetStarted, isPending }: HeroSectionProps) {
   return (
-    <section className="grid lg:grid-cols-2 gap-16 items-center w-full">
+    <section className="grid lg:grid-cols-2 gap-16 items-center w-full px-6">
       <motion.div
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="flex flex-col gap-10"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="flex flex-col gap-8 relative z-10"
       >
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-white/50 w-fit">
-          <Sparkles className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-semibold text-muted-foreground tracking-tight">
-            A new era of productivity
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-50/50 border border-cyan-100 backdrop-blur-sm w-fit shadow-sm">
+          <Sparkles className="w-4 h-4 text-cyan-600" />
+          <span className="text-sm font-semibold text-cyan-800 tracking-tight">
+            The future of work is here
           </span>
         </div>
 
-        <h1 className="text-6xl lg:text-7xl font-bold text-[#2D3748] leading-[1.1] tracking-tight">
-          Manage tasks with a <span className="text-primary">human touch.</span>
+        <h1 className="text-6xl lg:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight font-sans">
+          Manage tasks with <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-teal-500">
+            crystal clarity.
+          </span>
         </h1>
 
-        <p className="text-xl text-zinc-600 leading-relaxed max-w-xl font-medium">
-          Experience the most tactile task management tool ever built.
-          Beautiful, playful, and incredibly fast.
+        <p className="text-xl text-slate-600 leading-relaxed max-w-xl font-medium">
+          Experience a workspace that feels as good as it looks.
+          Beautiful glassmorphism, fluid interactions, and powerful focus.
         </p>
 
         <div className="flex flex-wrap gap-4 pt-4">
           <Button
             size="lg"
-            className="text-xl cursor-pointer shadow-lg"
+            className="text-lg px-8 py-6 rounded-2xl bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg shadow-cyan-500/20 transition-all hover:scale-[1.02]"
             onClick={onGetStarted}
             disabled={isPending}
           >
             Get Started Free
           </Button>
-          <Button variant="white" size="lg" className="text-xl cursor-pointer">
+          <Button
+            variant="ghost"
+            size="lg"
+            className="text-lg px-8 py-6 rounded-2xl text-slate-600 hover:text-cyan-800 hover:bg-cyan-50 transition-all"
+          >
             Watch Demo
           </Button>
         </div>
@@ -53,40 +60,51 @@ export function HeroSection({ onGetStarted, isPending }: HeroSectionProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="relative"
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="relative perspective-1000"
       >
-        <div className="relative z-10 flex flex-col gap-6">
-          <Card className="-rotate-3 hover:rotate-0 transition-transform duration-500 relative z-20 overflow-hidden cursor-default p-8 shadow-xl">
-            <div className="absolute top-0 right-0 p-6">
-              <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center">
-                <Zap className="text-secondary w-7 h-7" />
+        {/* Background Blobs */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-cyan-400/20 to-teal-300/20 rounded-full blur-3xl -z-10 animate-pulse" />
+
+        {/* Glass Cards Container */}
+        <div className="relative z-10 flex flex-col gap-6 transform rotate-y-12 rotate-x-6 hover:rotate-0 transition-transform duration-700 ease-out preserve-3d">
+
+          {/* Main Card */}
+          <div className="bg-white/40 backdrop-blur-xl border border-white/50 p-8 rounded-3xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] relative z-20">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <Zap className="text-white w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-800">Q3 Marketing Launch</h3>
+                <p className="text-slate-500 text-sm font-medium">In Progress • 85% Complete</p>
               </div>
             </div>
-            <h3 className="text-2xl font-bold mb-3">Design Review</h3>
-            <p className="text-zinc-500 mb-8 font-medium max-w-[280px]">Review the latest claymorphic assets for the task hub.</p>
-            <div className="flex -space-x-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-12 h-12 rounded-full border-4 border-white bg-zinc-100 cursor-pointer hover:translate-y-[-4px] transition-transform shadow-sm" />
+
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-white/40 shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
+                  <div className={`w-2 h-2 rounded-full ${i === 1 ? 'bg-emerald-400' : i === 2 ? 'bg-amber-400' : 'bg-cyan-400'}`} />
+                  <div className="h-2 w-24 bg-slate-200 rounded-full" />
+                  <div className="ml-auto h-6 w-6 rounded-full bg-slate-200" />
+                </div>
               ))}
             </div>
-          </Card>
+          </div>
 
-          <Card className="rotate-6 translate-x-12 -mt-12 hover:rotate-3 transition-transform duration-500 relative z-10 bg-primary/5 cursor-default p-8 border-primary/20 shadow-lg max-w-sm ml-auto">
-            <div className="flex items-center gap-6">
-              <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20">
-                <CheckCircle2 className="text-white w-6 h-6" />
+          {/* Floating Badge */}
+          <div className="absolute -right-8 top-1/2 -translate-y-1/2 bg-white/60 backdrop-blur-md border border-white/60 p-4 rounded-2xl shadow-xl animate-float">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
               </div>
-              <div className="flex flex-col gap-1">
-                <span className="font-bold text-lg">Task Completed!</span>
-                <span className="text-zinc-500 text-sm font-medium">Platform architecture ready</span>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-800 text-sm">Task Completed</span>
+                <span className="text-xs text-slate-500">Just now</span>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
-
-        <div className="absolute -top-20 -right-10 w-32 h-32 bg-accent rounded-[32%] rotate-45 blur-xl opacity-20 animate-pulse" />
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary rounded-full blur-2xl opacity-20" />
       </motion.div>
     </section>
   );
