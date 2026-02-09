@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 
 interface CTASectionProps {
   onGetStarted: () => void;
+  isPending?: boolean;
 }
 
-export function CTASection({ onGetStarted }: CTASectionProps) {
+export function CTASection({ onGetStarted, isPending }: CTASectionProps) {
   return (
     <section className="w-full px-6">
       <Card className="bg-gradient-to-br from-cyan-600 to-teal-500 p-20 flex flex-col items-center text-center gap-10 relative overflow-hidden group rounded-[2.5rem] border-none shadow-2xl">
@@ -28,8 +29,9 @@ export function CTASection({ onGetStarted }: CTASectionProps) {
             size="lg"
             className="text-xl px-12 py-7 rounded-2xl bg-white text-cyan-700 hover:bg-cyan-50 shadow-xl shadow-cyan-900/10 cursor-pointer hover:scale-105 transition-transform font-bold"
             onClick={onGetStarted}
+            disabled={isPending}
           >
-            Get Started Now — It's Free
+            {isPending ? 'Loading...' : 'Get Started Now — It\'s Free'}
           </Button>
         </div>
       </Card>

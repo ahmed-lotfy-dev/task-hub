@@ -24,7 +24,7 @@ export function LandingPage() {
         <HeroSection onGetStarted={handleGetStarted} isPending={isPending} />
         <HowItWorksSection />
         <PricingSection />
-        <CTASection onGetStarted={handleGetStarted} />
+        <CTASection onGetStarted={handleGetStarted} isPending={isPending} />
       </main>
       <LandingFooter />
     </div>
