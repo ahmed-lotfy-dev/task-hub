@@ -4,31 +4,35 @@ import { PricingCard } from "./pricing-card";
 
 export function PricingSection() {
   return (
-    <section className="w-full flex flex-col gap-20">
+    <section className="w-full flex flex-col gap-16">
       <div className="text-center flex flex-col gap-4">
-        <h2 className="text-4xl font-extrabold text-[#2D3748] tracking-tight">Flexible Plans for Every Team</h2>
-        <p className="text-lg text-muted-foreground font-medium">Start for free, scale when you're ready.</p>
+        <h2 className="text-4xl font-extrabold text-foreground tracking-tight">
+          Flexible plans for teams of any size
+        </h2>
+        <p className="text-lg text-muted-foreground">
+          Start free, then scale when you are ready. Everything stays simple and predictable.
+        </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
         <PricingCard
-          title="Personal"
+          title="Starter"
           price="0"
-          description="Perfect for individuals and side projects."
-          features={["Unlimited Boards", "3 Team Members", "100 Cards", "Basic AI Sync"]}
+          description="Perfect for personal projects and small teams."
+          features={["Up to 3 boards", "Basic automation", "Email support"]}
         />
         <PricingCard
-          title="Pro"
+          title="Team"
           price="12"
           popular
-          description="Best for growing teams and startups."
-          features={["Unlimited Members", "Advanced AI Features", "Gantt & Calendar Views", "Priority Support"]}
+          description="Ideal for growing teams and startups."
+          features={["Unlimited boards", "Team permissions", "Advanced automation", "Priority support"]}
         />
         <PricingCard
-          title="Business"
+          title="Enterprise"
           price="29"
-          description="For organizations needing enterprise scale."
-          features={["SAML/SSO", "Advanced RBAC", "Audit Logs", "Dedicated Manager"]}
+          description="Built for organizations with advanced needs."
+          features={["SAML SSO", "Audit logs", "Dedicated success manager"]}
         />
       </div>
     </section>

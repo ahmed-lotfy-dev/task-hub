@@ -12,7 +12,7 @@ export function SocialLink({ icon, href = "#" }: SocialLinkProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-primary hover:bg-white hover:shadow-sm transition-all cursor-pointer"
+      className="w-10 h-10 rounded-xl bg-muted border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-card hover:shadow-sm transition-all cursor-pointer"
     >
       {icon}
     </a>
