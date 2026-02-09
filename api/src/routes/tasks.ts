@@ -75,18 +75,27 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
     })
   })
   .patch("/:id", async (context: any) => {
-    const { id } = context.params;
-    const body = context.body;
-    const user = context.user as User;
+    try {
+      const { id } = context.params;
+      const body = context.body;
+      const user = context.user as User;
+      
+      console.log('[Task Update] Request:', { id, body, userId: user.id });
 
-    const task = await TaskService.updateTask(id, user.id, body as any);
+      const task = await TaskService.updateTask(id, user.id, body as any);
 
-    if (!task) {
-      context.set.status = 404;
-      return { message: "Task not found" };
+      if (!task) {
+        context.set.status = 404;
+        return { message: "Task not found" };
+      }
+      
+      console.log('[Task Update] Success:', task.id);
+      return mapTask(task);
+    } catch (error: any) {
+      console.error('[Task Update] Error:', error);
+      context.set.status = 500;
+      return { message: error.message || "Internal server error" };
     }
-
-    return mapTask(task);
   }, {
     auth: true,
     body: t.Object({

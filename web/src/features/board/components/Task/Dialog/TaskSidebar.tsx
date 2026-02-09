@@ -7,25 +7,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, X, Users, Calendar, Tag, Info } from "lucide-react";
+import { Plus, X, Users, Calendar, Tag, Info, Columns } from "lucide-react";
 
 interface TaskDetailSidebarProps {
   assignees: any[];
   candidates: any[];
+  lists?: any[];
+  currentListId?: string;
   currentUserId?: string;
   onAssign: (userId: string) => void;
   onUnassign: (userId: string) => void;
+  onChangeList?: (listId: string) => void;
 }
 
 export function TaskDetailSidebar({
   assignees,
   candidates,
+  lists,
+  currentListId,
   currentUserId,
   onAssign,
   onUnassign,
+  onChangeList,
 }: TaskDetailSidebarProps) {
   return (
     <div className="space-y-6">
+      <ListSection
+        lists={lists}
+        currentListId={currentListId}
+        onChangeList={onChangeList}
+      />
       <AssigneesSection
         assignees={assignees}
         currentUserId={currentUserId}
@@ -35,6 +46,40 @@ export function TaskDetailSidebar({
       />
       <TaskMetaSections />
       <TaskInfoBox />
+    </div>
+  );
+}
+
+function ListSection({
+  lists,
+  currentListId,
+  onChangeList,
+}: {
+  lists?: any[];
+  currentListId?: string;
+  onChangeList?: (listId: string) => void;
+}) {
+  if (!lists || lists.length === 0 || !onChangeList) return null;
+
+  const currentList = lists.find((l) => l.id === currentListId);
+
+  return (
+    <div className="space-y-2">
+      <SectionLabel icon={Columns} label="Status" />
+      <Select value={currentListId} onValueChange={onChangeList}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select status">
+            {currentList?.name || "Select status"}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          {lists.map((list) => (
+            <SelectItem key={list.id} value={list.id}>
+              {list.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

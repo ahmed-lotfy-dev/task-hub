@@ -22,6 +22,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
     isLoadingTask,
     boardName,
     listName,
+    lists,
     title,
     setTitle,
     description,
@@ -29,6 +30,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
     candidates,
     session,
     deleteTaskMutation,
+    updateTaskMutation,
     assignUserMutation,
     unassignUserMutation,
     isEditingTitle,
@@ -94,11 +96,16 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 <TaskDetailSidebar
                   assignees={task?.assignees || []}
                   candidates={candidates || []}
+                  lists={lists}
+                  currentListId={task?.listId}
                   currentUserId={session?.user?.id}
                   onAssign={(uid) => {
                     assignUserMutation.mutate(uid);
                   }}
                   onUnassign={(uid) => unassignUserMutation.mutate(uid)}
+                  onChangeList={(listId) => {
+                    updateTaskMutation.mutate({ listId });
+                  }}
                 />
               </div>
             </div>

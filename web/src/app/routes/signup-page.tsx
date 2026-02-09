@@ -102,12 +102,12 @@ export function SignupPage() {
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#F8FAFC]">
       {/* Left Column - Visual */}
       <div className="hidden lg:flex flex-col justify-between p-12 bg-slate-900 relative overflow-hidden text-white">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 left-0 w-150 h-150 bg-linear-to-br from-indigo-500/20 to-purple-500/20 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute bottom-0 right-0 w-150 h-150 bg-cyan-500/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/2" />
 
         <div className="relative z-10">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-cyan-500/20">T</div>
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-500 to-teal-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-cyan-500/20">T</div>
             <span className="text-2xl font-extrabold tracking-tight font-sans">Task<span className="text-cyan-400">Hub</span></span>
           </div>
         </div>

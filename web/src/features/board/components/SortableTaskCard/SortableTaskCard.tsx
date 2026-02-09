@@ -5,6 +5,7 @@ import { TaskCard } from '../TaskCard/TaskCard';
 interface SortableTaskCardProps {
   id: string;
   title: string;
+  listId: string;
   labels?: { id: string; name: string; color: string }[];
   members: number;
   comments: number;
@@ -17,7 +18,7 @@ interface SortableTaskCardProps {
   onClick?: () => void;
 }
 
-export function SortableTaskCard({ id, ...props }: SortableTaskCardProps) {
+export function SortableTaskCard({ id, listId, ...props }: SortableTaskCardProps) {
   const {
     attributes,
     listeners,
@@ -29,7 +30,7 @@ export function SortableTaskCard({ id, ...props }: SortableTaskCardProps) {
     id,
     data: {
       type: "Task",
-      task: { id, ...props },
+      task: { id, listId, ...props },
     },
   });
 

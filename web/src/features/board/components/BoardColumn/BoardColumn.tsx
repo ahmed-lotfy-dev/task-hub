@@ -22,25 +22,29 @@ export function BoardColumn({ id, title, count, children }: BoardColumnProps) {
   const { setNodeRef } = useDroppable({
     id: id,
     disabled: !id,
+    data: {
+      type: 'List',
+      list: { id, title },
+    },
   });
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        "flex flex-col shrink-0 w-[280px] h-full max-h-full rounded-2xl",
+        "flex flex-col shrink-0 w-70 h-full max-h-full rounded-2xl",
         "bg-white/40 dark:bg-black/40 backdrop-blur-xl", // Enhanced Glass
         "border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]", // Neo-Glass Shadow
         "transition-colors duration-200"
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 pb-3 group drag-handle cursor-grab active:cursor-grabbing">
+      <div className="flex items-center justify-between p-4 pb-3 group">
         <div className="flex items-center gap-3 overflow-hidden">
           <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-5 tracking-tight font-sans">
             {title}
           </h3>
-          <span className="flex items-center justify-center min-w-[20px] h-5 px-2 text-[11px] font-bold text-cyan-700 bg-cyan-100/80 dark:text-cyan-300 dark:bg-cyan-900/50 rounded-full shadow-sm ring-1 ring-cyan-500/10">
+          <span className="flex items-center justify-center min-w-5 h-5 px-2 text-[11px] font-bold text-cyan-700 bg-cyan-100/80 dark:text-cyan-300 dark:bg-cyan-900/50 rounded-full shadow-sm ring-1 ring-cyan-500/10">
             {count}
           </span>
           <button

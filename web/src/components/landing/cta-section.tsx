@@ -11,7 +11,7 @@ interface CTASectionProps {
 export function CTASection({ onGetStarted, isPending }: CTASectionProps) {
   return (
     <section className="w-full px-6">
-      <Card className="bg-gradient-to-br from-cyan-600 to-teal-500 p-20 flex flex-col items-center text-center gap-10 relative overflow-hidden group rounded-[2.5rem] border-none shadow-2xl">
+      <Card className="bg-linear-to-br from-cyan-600 to-teal-500 p-20 flex flex-col items-center text-center gap-10 relative overflow-hidden group rounded-[2.5rem] border-none shadow-2xl">
         <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2" />
 
