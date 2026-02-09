@@ -20,6 +20,7 @@ import { Loader2 } from "lucide-react";
 interface BoardSettingsDialogProps {
   boardId: string;
   boardName: string;
+  workspaceSlug?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -53,13 +54,18 @@ export function BoardSettingsDialog({ boardId, boardName, open, onOpenChange }: 
       });
     },
     onSuccess: () => {
-      toast.success("Board deleted");
+      toast.success("Board deleted successfully");
+      // Invalidate everything that might have stale board/task data
       queryClient.invalidateQueries({ queryKey: ["boards"] });
+      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
+
       onOpenChange(false);
-      navigate("/workspace");
+      navigate("/home");
     },
     onError: () => {
-      toast.error("Failed to delete board");
+      toast.error("Failed to delete board. Please try again.");
     }
   });
 

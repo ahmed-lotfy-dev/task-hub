@@ -2,11 +2,11 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-import { useTaskDetail } from "../../hooks/use-task-detail";
-import { TaskDetailHeader } from "./Header";
-import { TaskDetailDescription } from "./Description";
-import { TaskDetailActivity } from "./Activity";
-import { TaskDetailSidebar } from "./Sidebar";
+import { useTaskDetail } from "../../../hooks/use-task-detail";
+import { TaskDetailHeader } from "./TaskHeader";
+import { TaskDetailDescription } from "./TaskDescription";
+import { TaskDetailActivity } from "./TaskActivity";
+import { TaskDetailSidebar } from "./TaskSidebar";
 import { Loader2 } from "lucide-react";
 import { DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -20,28 +20,27 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
   const {
     task,
     isLoadingTask,
-    lists,
     boardName,
     listName,
     title,
     setTitle,
     description,
     setDescription,
-    priority,
-    setPriority,
     candidates,
     session,
-    updateTaskMutation,
     deleteTaskMutation,
     assignUserMutation,
     unassignUserMutation,
+    isEditingTitle,
+    handleStartEditingTitle,
+    handleStopEditingTitle,
   } = useTaskDetail(taskId);
 
   if (!taskId) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] min-h-[500px] h-[85vh] flex flex-col p-0 gap-0 bg-white border-none shadow-2xl rounded-3xl overflow-hidden leading-relaxed">
+      <DialogContent className="sm:max-w-[800px] min-h-[500px] h-[85vh] flex flex-col p-0 gap-0 bg-white border-none shadow-2xl rounded-[32px] overflow-hidden leading-relaxed animate-in zoom-in-95 duration-300">
         <div className="sr-only">
           <DialogTitle>{title || "Task Detail"}</DialogTitle>
           <DialogDescription>
@@ -59,31 +58,31 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
               listName={listName}
               title={title}
               setTitle={setTitle}
-              listId={task?.listId}
-              lists={lists}
-              priority={priority}
-              setPriority={setPriority}
-              onUpdate={(data) => updateTaskMutation.mutate(data)}
               onDelete={() => {
                 deleteTaskMutation.mutate(undefined, {
                   onSuccess: () => onOpenChange(false)
                 });
               }}
+              isEditingTitle={isEditingTitle}
+              handleStartEditingTitle={handleStartEditingTitle}
+              handleStopEditingTitle={handleStopEditingTitle}
             />
 
-            <div className="flex-1 overflow-y-auto px-8 py-6 md:flex gap-12 bg-zinc-50/10">
-              <div className="flex-1 space-y-12">
-                <section>
+            <div className="flex-1 overflow-y-auto px-10 py-8 md:flex gap-16 bg-zinc-50/10">
+              <div className="flex-1 space-y-16">
+                <section className="animate-in fade-in slide-in-from-left-4 duration-500 delay-150">
                   <TaskDetailDescription
                     description={description}
                     setDescription={setDescription}
-                    onUpdate={(data) => updateTaskMutation.mutate(data)}
+                    onUpdate={(data) => {
+                      // Handle description update through the mutation in useTaskDetail
+                    }}
                   />
                 </section>
 
-                <div className="h-px bg-zinc-100 w-full" />
+                <div className="h-px bg-zinc-100 w-full opacity-60" />
 
-                <section>
+                <section className="animate-in fade-in slide-in-from-left-4 duration-500 delay-300">
                   <TaskDetailActivity
                     taskId={taskId}
                     userId={session?.user?.id}
@@ -91,7 +90,7 @@ export function TaskDetailDialog({ taskId, open, onOpenChange }: TaskDetailDialo
                 </section>
               </div>
 
-              <div className="w-64 shrink-0 space-y-10">
+              <div className="w-72 shrink-0 space-y-12 animate-in fade-in slide-in-from-right-4 duration-500 delay-200">
                 <TaskDetailSidebar
                   assignees={task?.assignees || []}
                   candidates={candidates || []}

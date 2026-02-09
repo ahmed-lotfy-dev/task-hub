@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { useCreateTask } from "@/hooks/use-tasks";
 import { toast } from "sonner";
-import { useOnClickOutside } from "@/hooks/use-on-click-outside";
 
 interface AddCardFormProps {
   listId: string;
@@ -18,12 +17,6 @@ export function AddCardForm({ listId, boardId, onCancel }: AddCardFormProps) {
   const [title, setTitle] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const mutation = useCreateTask();
-
-  useOnClickOutside(formRef, () => {
-    // Optional: Auto-save or close? Trello usually keeps it open or closes. 
-    // Let's close if empty, or keep open if has text? Use onCancel for now.
-    if (!title.trim()) onCancel();
-  });
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -40,11 +33,11 @@ export function AddCardForm({ listId, boardId, onCancel }: AddCardFormProps) {
       {
         onSuccess: () => {
           setTitle("");
-          toast.success("Card added");
+          toast.success("Task added");
           // Keep form open for rapid entry like Trello
         },
         onError: (error) => {
-          toast.error(`Failed to add card: ${error.message}`);
+          toast.error(`Failed to add task: ${error.message}`);
         },
       }
     );

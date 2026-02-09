@@ -1,13 +1,16 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { TaskCard } from "./TaskCard";
+import { TaskCard } from '../TaskCard/TaskCard';
 
 interface SortableTaskCardProps {
   id: string;
   title: string;
-  tags: string[];
+  labels?: { id: string; name: string; color: string }[];
   members: number;
   comments: number;
+  hasDescription?: boolean;
+  checklistItems?: number;
+  checklistCompleted?: number;
   assignees?: { id: string; name: string; image: string | null }[];
   priority?: "low" | "medium" | "high";
   dueDate?: string | null;
@@ -38,7 +41,7 @@ export function SortableTaskCard({ id, ...props }: SortableTaskCardProps) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard id={id} {...props} priority={props.priority} />
+      <TaskCard id={id} {...props} />
     </div>
   );
 }

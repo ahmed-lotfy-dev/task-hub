@@ -29,23 +29,23 @@ export function BoardColumn({ id, title, count, children }: BoardColumnProps) {
       ref={setNodeRef}
       className={cn(
         "flex flex-col shrink-0 w-[280px] h-full max-h-full rounded-2xl",
-        "bg-slate-100/80 dark:bg-zinc-900/80 backdrop-blur-md",
-        "border border-white/20 dark:border-white/5 shadow-sm",
+        "bg-white/40 dark:bg-black/40 backdrop-blur-xl", // Enhanced Glass
+        "border border-white/30 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]", // Neo-Glass Shadow
         "transition-colors duration-200"
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-3.5 pb-2 group drag-handle cursor-grab active:cursor-grabbing">
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-5">
+      <div className="flex items-center justify-between p-4 pb-3 group drag-handle cursor-grab active:cursor-grabbing">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <h3 className="text-[15px] font-bold text-slate-800 dark:text-slate-100 truncate leading-5 tracking-tight font-sans">
             {title}
           </h3>
-          <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold text-slate-500 bg-slate-200/50 dark:text-slate-400 dark:bg-zinc-800 rounded-full">
+          <span className="flex items-center justify-center min-w-[20px] h-5 px-2 text-[11px] font-bold text-cyan-700 bg-cyan-100/80 dark:text-cyan-300 dark:bg-cyan-900/50 rounded-full shadow-sm ring-1 ring-cyan-500/10">
             {count}
           </span>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="p-1 rounded-md hover:bg-slate-200/50 dark:hover:bg-zinc-800 opacity-0 group-hover:opacity-100 transition-all text-slate-500 hover:text-slate-700"
+            className="p-1 rounded-full hover:bg-white/50 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all text-slate-500 hover:text-cyan-600 active:scale-95"
             aria-label="Quick add task"
           >
             <Plus className="w-4 h-4" />
@@ -55,7 +55,7 @@ export function BoardColumn({ id, title, count, children }: BoardColumnProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 hover:bg-slate-200/50 dark:hover:bg-zinc-800 text-slate-500"
+            className="h-8 w-8 hover:bg-white/50 dark:hover:bg-white/10 text-slate-400 hover:text-slate-700 transition-all"
             aria-label="List actions"
           >
             <MoreHorizontal className="w-4 h-4" />

@@ -11,7 +11,7 @@ import { useBoards } from "@/hooks/use-boards";
 export function useTaskDetail(taskId: string | null) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
-  const { boardId } = useParams({ strict: false });
+  const { boardId } = useParams();
   const { data: boards } = useBoards();
   const { data: lists } = useLists(boardId);
 
@@ -19,7 +19,7 @@ export function useTaskDetail(taskId: string | null) {
 
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<string>("medium");
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
 
   const { data: task, isLoading: isLoadingTask } = useQuery({
     queryKey: ["task", taskId],
@@ -37,7 +37,6 @@ export function useTaskDetail(taskId: string | null) {
     if (task) {
       setTitle(task.title || "");
       setDescription(task.description || "");
-      setPriority(task.priority || "medium");
     }
   }, [task]);
 
@@ -55,6 +54,17 @@ export function useTaskDetail(taskId: string | null) {
       queryClient.invalidateQueries({ queryKey: ["task", taskId] });
     },
   });
+
+  const handleStartEditingTitle = () => {
+    setIsEditingTitle(true);
+  };
+
+  const handleStopEditingTitle = () => {
+    setIsEditingTitle(false);
+    if (title) {
+      updateTaskMutation.mutate({ title });
+    }
+  };
 
   const deleteTaskMutation = useMutation({
     mutationFn: async () => {
@@ -127,8 +137,6 @@ export function useTaskDetail(taskId: string | null) {
     setTitle,
     description,
     setDescription,
-    priority,
-    setPriority,
     candidates,
     session,
     boardName: board?.name,
@@ -137,5 +145,8 @@ export function useTaskDetail(taskId: string | null) {
     deleteTaskMutation,
     assignUserMutation,
     unassignUserMutation,
+    isEditingTitle,
+    handleStartEditingTitle,
+    handleStopEditingTitle,
   };
 }
