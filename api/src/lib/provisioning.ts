@@ -43,11 +43,11 @@ export async function ensureUserOnboarding(userId: string) {
       entityName: workspace.name,
     });
 
-    // 2. Add user as admin member
+    // 2. Add user as owner member
     await tx.insert(workspaceMembers).values({
       workspaceId: workspace.id,
       userId: userId,
-      role: "admin",
+      role: "owner",
     });
 
     // 3. Create General Board
@@ -76,7 +76,8 @@ export async function ensureUserOnboarding(userId: string) {
     const defaultLists = [
       { name: "To Do", position: 1024 },
       { name: "In Progress", position: 2048 },
-      { name: "Done", position: 3072 },
+      { name: "Review", position: 3072 },
+      { name: "Done", position: 4096 },
     ];
 
     for (const list of defaultLists) {
