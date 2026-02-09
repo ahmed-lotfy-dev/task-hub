@@ -15,6 +15,8 @@ export function ApiKeySuccessCard({
   onCopy,
 }: ApiKeySuccessCardProps) {
   const [copiedRaw, setCopiedRaw] = useState(false);
+  const backendBaseUrl = (import.meta.env.VITE_BACKEND_API_URL ?? "").replace(/\/+$/, "");
+  const mcpUrl = backendBaseUrl ? `${backendBaseUrl}/mcp` : "/mcp";
 
   const handleCopyRaw = () => {
     onCopy(generatedKey);
@@ -25,7 +27,7 @@ export function ApiKeySuccessCard({
   const handleCopyConfig = () => {
     const config = `"taskflow": {
   "type": "http",
-  "url": "https://api.ahmedlotfy.site/mcp",
+  "url": "${mcpUrl}",
   "headers": {
     "Authorization": "Bearer ${generatedKey}"
   }

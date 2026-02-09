@@ -8,11 +8,14 @@ interface ApiKeyInfoCardsProps {
 }
 
 export function ApiKeyInfoCards({ onCopy, generatedKey }: ApiKeyInfoCardsProps) {
+  const backendBaseUrl = (import.meta.env.VITE_BACKEND_API_URL ?? "").replace(/\/+$/, "");
+  const mcpUrl = backendBaseUrl ? `${backendBaseUrl}/mcp` : "/mcp";
+
   const handleCopyClaudeConfig = () => {
     onCopy(
       `"taskflow": {
   "type": "http",
-  "url": "https://api.ahmedlotfy.site/mcp",
+  "url": "${mcpUrl}",
   "headers": {
     "Authorization": "Bearer ${generatedKey || "YOUR_KEY_HERE"}"
   }
@@ -52,7 +55,7 @@ export function ApiKeyInfoCards({ onCopy, generatedKey }: ApiKeyInfoCardsProps) 
               </div>
             </div>
             <code className="text-xs text-slate-300 font-mono">
-              https://api.ahmedlotfy.site/mcp
+              {mcpUrl}
             </code>
           </div>
 
