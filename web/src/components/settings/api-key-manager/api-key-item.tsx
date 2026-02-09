@@ -1,52 +1,69 @@
-import { Key, Clock, Monitor, Trash2 } from "lucide-react";
+import { Key, Clock, Monitor, Trash2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { formatDate, DATE_FORMATS } from "@taskflow/shared";
+import { formatDistanceToNow } from "date-fns";
 import { ApiKey } from "@taskflow/shared";
 
 interface ApiKeyItemProps {
   apiKey: ApiKey;
   onRevoke: (id: string) => void;
+  onRegenerate?: (id: string) => void;
 }
 
-export function ApiKeyItem({ apiKey, onRevoke }: ApiKeyItemProps) {
+export function ApiKeyItem({ apiKey, onRevoke, onRegenerate }: ApiKeyItemProps) {
   const handleRevoke = () => {
     onRevoke(apiKey.id);
   };
 
+  const handleRegenerate = () => {
+    onRegenerate?.(apiKey.id);
+  };
+
   return (
-    <Card className="p-6 flex items-center justify-between group hover:shadow-2xl hover:shadow-zinc-200/50 hover:-translate-y-1 transition-all duration-300 bg-white/80 backdrop-blur-sm rounded-[32px] border-white/20">
-      <div className="flex items-center gap-6">
-        <div className="w-16 h-16 rounded-3xl bg-zinc-50 flex items-center justify-center text-zinc-300 group-hover:bg-primary/10 group-hover:text-primary transition-all duration-500 scale-95 group-hover:scale-100">
-          <Key className="w-8 h-8" />
+    <Card className="p-4 flex items-center justify-between hover:shadow-sm transition-shadow">
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
+          <Key className="w-5 h-5" />
         </div>
         <div>
-          <div className="font-black text-xl text-zinc-800">{apiKey.name}</div>
-          <div className="flex items-center gap-6 text-sm text-zinc-400 mt-1.5 font-bold">
-            <div className="bg-zinc-100/80 px-3 py-1 rounded-xl uppercase tracking-widest text-[10px] text-zinc-500 border border-zinc-200/50">
-              {apiKey.preview}
-            </div>
-            <span className="flex items-center gap-2 group-hover:text-zinc-600 transition-colors">
-              <Clock className="w-4 h-4 opacity-40" />
-              {formatDate(apiKey.createdAt, DATE_FORMATS.DISPLAY_WITH_TIME)}
+          <div className="font-medium text-sm">{apiKey.name}</div>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+            <span className="font-mono bg-muted px-1.5 py-0.5 rounded">{apiKey.preview}</span>
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              Created {formatDistanceToNow(new Date(apiKey.createdAt), { addSuffix: true })}
             </span>
             {apiKey.lastUsedAt && (
-              <span className="flex items-center gap-2 text-primary">
-                <Monitor className="w-4 h-4 opacity-40" />
-                {formatDate(apiKey.lastUsedAt, DATE_FORMATS.SHORT)}
+              <span className="flex items-center gap-1 text-foreground/70">
+                <Monitor className="w-3 h-3" />
+                Used {formatDistanceToNow(new Date(apiKey.lastUsedAt), { addSuffix: true })}
               </span>
             )}
           </div>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-12 h-12 rounded-2xl text-zinc-300 hover:bg-red-50 hover:text-red-500 transition-all duration-300 opacity-0 group-hover:opacity-100"
-        onClick={handleRevoke}
-      >
-        <Trash2 className="w-6 h-6" />
-      </Button>
+      <div className="flex items-center gap-1">
+        {onRegenerate && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={handleRegenerate}
+            title="Regenerate key"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </Button>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+          onClick={handleRevoke}
+          title="Revoke key"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
     </Card>
   );
 }

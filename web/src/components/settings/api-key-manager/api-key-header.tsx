@@ -22,28 +22,28 @@ export function ApiKeyHeader({
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">API Management</h2>
-        <p className="text-muted-foreground">
-          Securely connect external AI agents to your TaskHub workspace via MCP.
+        <h2 className="text-lg font-semibold tracking-tight">API Keys</h2>
+        <p className="text-sm text-muted-foreground">
+          Manage API keys for MCP server access
         </p>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Input
-          placeholder="Key Name (e.g. Claude Desktop)"
+          placeholder="Key name (e.g. Claude)"
           value={newKeyName}
           onChange={(e) => setNewKeyName(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-64 bg-white/50"
+          className="w-56"
         />
         <Button
           disabled={!newKeyName || isPending}
           onClick={onGenerate}
-          className="rounded-xl shadow-lg shadow-blue-500/20"
+          size="sm"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Generate Key
+          <Plus className="w-4 h-4 mr-1.5" />
+          Generate
         </Button>
       </div>
     </div>

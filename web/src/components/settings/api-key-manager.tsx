@@ -52,6 +52,18 @@ export function APIKeyManager({ showInfo = true, showHeader = true, infoOnly = f
     },
   });
 
+  const regenerateMutation = useMutation({
+    mutationFn: (id: string) =>
+      apiFetch<CreateApiKeyResponse>(`/api/api-keys/${id}/regenerate`, {
+        method: "POST",
+      }),
+    onSuccess: (data) => {
+      setGeneratedKey(data.key);
+      queryClient.invalidateQueries({ queryKey: ["api-keys"] });
+      toast.success("API Key regenerated! Copy the new key now.");
+    },
+  });
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.info("Copied to clipboard");
@@ -65,6 +77,10 @@ export function APIKeyManager({ showInfo = true, showHeader = true, infoOnly = f
 
   const handleRevoke = (id: string) => {
     revokeMutation.mutate(id);
+  };
+
+  const handleRegenerate = (id: string) => {
+    regenerateMutation.mutate(id);
   };
 
   const handleDismissSuccess = () => {
@@ -96,7 +112,7 @@ export function APIKeyManager({ showInfo = true, showHeader = true, infoOnly = f
 
       <div className={cn("grid gap-8", showInfo ? "lg:grid-cols-3" : "grid-cols-1")}>
         <div className={cn("space-y-4", showInfo ? "lg:col-span-2" : "col-span-1")}>
-          <ApiKeyList keys={keys} isLoading={isLoading} onRevoke={handleRevoke} />
+          <ApiKeyList keys={keys} isLoading={isLoading} onRevoke={handleRevoke} onRegenerate={handleRegenerate} />
         </div>
 
         {showInfo && <ApiKeyInfoCards onCopy={copyToClipboard} generatedKey={generatedKey} />}

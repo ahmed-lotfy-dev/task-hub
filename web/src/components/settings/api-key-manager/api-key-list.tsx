@@ -6,35 +6,36 @@ interface ApiKeyListProps {
   keys: ApiKey[] | undefined;
   isLoading: boolean;
   onRevoke: (id: string) => void;
+  onRegenerate?: (id: string) => void;
 }
 
-export function ApiKeyList({ keys, isLoading, onRevoke }: ApiKeyListProps) {
+export function ApiKeyList({ keys, isLoading, onRevoke, onRegenerate }: ApiKeyListProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20 text-muted-foreground">
-        <RefreshCw className="w-10 h-10 animate-spin text-primary/20" />
+      <div className="flex items-center justify-center py-12 text-muted-foreground">
+        <RefreshCw className="w-6 h-6 animate-spin" />
       </div>
     );
   }
 
   if (!keys || keys.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 bg-white/50 backdrop-blur-sm rounded-[48px] border border-dashed border-zinc-200">
-        <div className="w-20 h-20 rounded-full bg-zinc-50 flex items-center justify-center mb-6">
-          <Key className="w-10 h-10 text-zinc-200" />
+      <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed border-border rounded-lg bg-muted/30">
+        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center mb-3">
+          <Key className="w-5 h-5 text-muted-foreground" />
         </div>
-        <h3 className="text-xl font-bold text-zinc-400">No active API keys</h3>
-        <p className="text-sm text-zinc-300 font-medium max-w-xs mt-2 text-center">
-          Generate a key to connect your AI agents to the TaskHub ecosystem.
+        <h3 className="text-sm font-medium text-foreground">No API keys</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          Generate a key to connect AI agents via MCP
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="space-y-2">
       {keys.map((key) => (
-        <ApiKeyItem key={key.id} apiKey={key} onRevoke={onRevoke} />
+        <ApiKeyItem key={key.id} apiKey={key} onRevoke={onRevoke} onRegenerate={onRegenerate} />
       ))}
     </div>
   );
