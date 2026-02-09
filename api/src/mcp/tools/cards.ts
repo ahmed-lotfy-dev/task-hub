@@ -1,9 +1,7 @@
-import { db } from "../../db/db";
-import { cards, lists } from "../../db/schema";
-import { eq, desc, asc } from "drizzle-orm";
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { logActivity } from "../../lib/activity-logger";
+import { ListService } from "../../services/list.service";
+import { TaskService } from "../../services/task.service";
 
 export const registerCardTools = (server: McpServer) => {
   server.registerTool(
@@ -14,12 +12,10 @@ export const registerCardTools = (server: McpServer) => {
         boardId: z.string().describe("The UUID of the board")
       })
     },
-    async ({ boardId }) => {
+    async ({ boardId }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
       try {
-        const data = await db
-          .select()
-          .from(cards)
-          .where(eq(cards.boardId, boardId));
+        const data = await TaskService.getBoardTasks(boardId, userId);
 
         return {
           content: [
@@ -48,11 +44,7 @@ export const registerCardTools = (server: McpServer) => {
     },
     async ({ boardId }) => {
       try {
-        const data = await db
-          .select()
-          .from(lists)
-          .where(eq(lists.boardId, boardId))
-          .orderBy(asc(lists.position));
+        const data = await ListService.getBoardLists(boardId);
 
         return {
           content: [
@@ -76,8 +68,7 @@ export const registerCardTools = (server: McpServer) => {
     {
       description: "Create a new task (card) in a list",
       inputSchema: z.object({
-        userId: z.string().describe("The ID of the user creating the task"),
-        workspaceId: z.string().describe("The UUID of the workspace"),
+        workspaceId: z.string().describe("The UUID of the workspace (used for context)"),
         boardId: z.string().describe("The UUID of the board"),
         listId: z.string().describe("The UUID of the list"),
         title: z.string().describe("The title of the task"),
@@ -85,38 +76,22 @@ export const registerCardTools = (server: McpServer) => {
         priority: z.enum(['low', 'medium', 'high']).optional().describe("The task priority")
       })
     },
-    async ({ userId, workspaceId, boardId, listId, title, description, priority }) => {
+    async ({ boardId, listId, title, description, priority }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
+      if (!userId) {
+        return {
+          content: [{ type: "text", text: "Error: No authenticated user found. Please provide a valid API key." }],
+          isError: true
+        };
+      }
       try {
-        const lastCard = await db
-          .select({ position: cards.position })
-          .from(cards)
-          .where(eq(cards.listId, listId))
-          .orderBy(desc(cards.position))
-          .limit(1);
-
-        const position = (lastCard[0]?.position ?? 0) + 1000;
-
-        const [card] = await db
-          .insert(cards)
-          .values({
-            boardId: boardId,
-            listId: listId,
-            title,
-            description: description ?? null,
-            priority: (priority as any) ?? null,
-            position,
-          })
-          .returning();
-
-        await logActivity({
+        const card = await TaskService.createTask({
           userId,
-          workspaceId: workspaceId,
-          boardId: boardId,
-          action: 'create',
-          entityType: 'card',
-          entityId: card.id,
-          entityName: card.title,
-          metadata: { via: 'mcp' }
+          boardId,
+          listId,
+          title,
+          description,
+          priority: priority as any
         });
 
         return {
@@ -135,4 +110,64 @@ export const registerCardTools = (server: McpServer) => {
       }
     }
   );
-}
+
+  server.registerTool(
+    "update_task",
+    {
+      description: "Update an existing task",
+      inputSchema: z.object({
+        taskId: z.string().uuid().describe("The UUID of the task"),
+        title: z.string().optional().describe("New title"),
+        description: z.string().optional().describe("New description"),
+        listId: z.string().optional().describe("New list ID (move task)"),
+        priority: z.enum(['low', 'medium', 'high']).optional().describe("New priority")
+      })
+    },
+    async ({ taskId, ...updates }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
+      if (!userId) {
+        return {
+          content: [{ type: "text", text: "Error: No authenticated user found." }],
+          isError: true
+        };
+      }
+      try {
+        const updated = await TaskService.updateTask(taskId, userId, updates as any);
+        if (!updated) {
+          return { content: [{ type: "text", text: "Task not found" }], isError: true };
+        }
+        return { content: [{ type: "text", text: `Task updated successfully` }] };
+      } catch (error: any) {
+        return { content: [{ type: "text", text: `Error updating task: ${error.message}` }], isError: true };
+      }
+    }
+  );
+
+  server.registerTool(
+    "delete_task",
+    {
+      description: "Delete a task",
+      inputSchema: z.object({
+        taskId: z.string().uuid().describe("The UUID of the task")
+      })
+    },
+    async ({ taskId }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
+      if (!userId) {
+        return {
+          content: [{ type: "text", text: "Error: No authenticated user found." }],
+          isError: true
+        };
+      }
+      try {
+        const deleted = await TaskService.deleteTask(taskId, userId);
+        if (!deleted) {
+          return { content: [{ type: "text", text: "Task not found" }], isError: true };
+        }
+        return { content: [{ type: "text", text: `Task deleted successfully` }] };
+      } catch (error: any) {
+        return { content: [{ type: "text", text: `Error deleting task: ${error.message}` }], isError: true };
+      }
+    }
+  );
+};
