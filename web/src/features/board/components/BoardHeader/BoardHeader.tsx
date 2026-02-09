@@ -49,7 +49,7 @@ export function BoardHeader({
         body: JSON.stringify({
           boardId,
           name,
-          position: Date.now(),
+          position: Math.floor(Date.now() / 1000),
         }),
       });
     },

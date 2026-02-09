@@ -17,12 +17,14 @@ export function AddListColumn({ boardId }: AddListColumnProps) {
 
   const createListMutation = useMutation({
     mutationFn: async (name: string) => {
+      const position = Math.floor(Date.now() / 1000);
+      console.log('Creating list with position:', position, 'Date.now():', Date.now());
       return apiFetch(`/api/lists`, {
         method: "POST",
         body: JSON.stringify({
           boardId,
           name,
-          position: Date.now(),
+          position,
         }),
       });
     },
@@ -88,7 +90,7 @@ export function AddListColumn({ boardId }: AddListColumnProps) {
   return (
     <button
       onClick={() => setIsAdding(true)}
-      className="shrink-0 w-[272px] h-12 flex items-center justify-center gap-2 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-xl border-2 border-dashed border-white/40 text-white/80 hover:text-white transition-all duration-200 group"
+      className="shrink-0 w-[272px] h-12 flex items-center justify-center gap-2 bg-slate-100/80 hover:bg-slate-200/80 backdrop-blur-sm rounded-xl border-2 border-dashed border-slate-300 text-slate-600 hover:text-slate-800 transition-all duration-200 group"
     >
       <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
       <span className="font-medium">Add a column</span>

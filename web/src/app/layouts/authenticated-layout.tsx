@@ -38,7 +38,7 @@ export function AuthenticatedLayout() {
   return (
     <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
       <PersonalSidebar />
-      <main className="flex-1 overflow-y-auto h-full p-12">
+      <main className="flex-1 overflow-y-auto h-full px-2">
         <Outlet />
       </main>
     </div>

@@ -1,5 +1,5 @@
 import { db } from "../src/db/db";
-import { lists, boards } from "../src/db/schema";
+import { lists } from "../src/db/schema";
 import { eq, asc } from "drizzle-orm";
 
 /**
@@ -8,7 +8,7 @@ import { eq, asc } from "drizzle-orm";
  */
 async function updateBoardColumns() {
   const boardId = process.argv[2];
-  
+
   if (!boardId) {
     console.error("Usage: bun run scripts/update-board-columns.ts <board-id>");
     console.error("\nTo find your board ID, check the URL when viewing the board:");
@@ -30,38 +30,26 @@ async function updateBoardColumns() {
     console.log(`  ${i + 1}. ${list.name} (position: ${list.position})`);
   });
 
-  // Define the new flow
-  const newFlow = [
-    { name: "Backlog", position: 1000 },
-    { name: "Todo", position: 2000 },
-    { name: "In Progress", position: 3000 },
-    { name: "Review", position: 4000 },
-    { name: "Done", position: 5000 },
-  ];
-
-  console.log("\nNew flow will be:");
-  newFlow.forEach((list, i) => {
-    console.log(`  ${i + 1}. ${list.name} (position: ${list.position})`);
-  });
-
-  // Rename existing lists to match new flow where possible
-  const renameMap: Record<string, string> = {
-    "To Do": "Todo",
-    "In Progress": "In Progress", // Same
-    "Review": "Review", // Same
-    "Done": "Done", // Same
+  // Define target positions for the new flow
+  const positionMap: Record<string, number> = {
+    Backlog: 1000,
+    Todo: 2000,
+    "In Progress": 3000,
+    Review: 4000,
+    Done: 5000,
   };
 
-  console.log("\nUpdating lists...");
+  console.log("\nUpdating list positions...");
 
+  // Update positions for all lists
   for (const list of currentLists) {
-    const newName = renameMap[list.name];
-    if (newName && newName !== list.name) {
+    const targetPosition = positionMap[list.name];
+    if (targetPosition && targetPosition !== list.position) {
       await db
         .update(lists)
-        .set({ name: newName })
+        .set({ position: targetPosition })
         .where(eq(lists.id, list.id));
-      console.log(`  Renamed "${list.name}" → "${newName}"`);
+      console.log(`  Updated "${list.name}" position: ${list.position} → ${targetPosition}`);
     }
   }
 
@@ -76,15 +64,25 @@ async function updateBoardColumns() {
     console.log(`  Created "Backlog" column`);
   }
 
-  // Update positions to match new flow
-  const updatedLists = await db
+  // Rename "To Do" to "Todo" if exists
+  const todoList = currentLists.find((l) => l.name === "To Do");
+  if (todoList) {
+    await db
+      .update(lists)
+      .set({ name: "Todo" })
+      .where(eq(lists.id, todoList.id));
+    console.log(`  Renamed "To Do" → "Todo"`);
+  }
+
+  // Show final state
+  const finalLists = await db
     .select()
     .from(lists)
     .where(eq(lists.boardId, boardId as any))
     .orderBy(asc(lists.position));
 
-  console.log("\nUpdated lists:");
-  updatedLists.forEach((list, i) => {
+  console.log("\nFinal lists (ordered by position):");
+  finalLists.forEach((list, i) => {
     console.log(`  ${i + 1}. ${list.name} (position: ${list.position})`);
   });
 
