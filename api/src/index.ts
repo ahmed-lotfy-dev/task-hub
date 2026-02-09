@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
-import { openapi } from '@elysiajs/openapi'
+import { openapi } from "@elysiajs/openapi";
 import { auth } from "./lib/auth";
 import { workspaceRoutes } from "./routes/workspaces";
 import { boardRoutes } from "./routes/boards";
@@ -12,23 +12,40 @@ import { invitationRoutes } from "./routes/invitations";
 import { commentRoutes } from "./routes/comments";
 import { notificationRoutes } from "./routes/notifications";
 import { memberRoutes } from "./routes/members";
+import logixlysia from "logixlysia";
 import { betterAuth } from "./middleware/auth-middleware";
 import { mcpServer } from "./mcp";
 import llmText from "./llm.txt";
 
 const app = new Elysia()
-  .use(openapi({ scalar: true, documentation: { info: { title: "Task Deck API", version: "1.0.0" } }, path: "/docs" }))
-  .use(cors({
-    origin: (request) => {
-      const origin = request.headers.get('origin');
-      if (!origin) return true;
-      return true; // Reflect origin for easier debugging while staying safe
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization", "Cookie", "Accept", "X-MCP-Protocol-Version"],
-    exposeHeaders: ["Content-Type", "Authorization"],
-  }))
+
+  .use(
+    openapi({
+      scalar: true,
+      documentation: { info: { title: "Task Deck API", version: "1.0.0" } },
+      path: "/docs",
+    }),
+  )
+  .use(
+    cors({
+      origin: (request) => {
+        const origin = request.headers.get("origin");
+        if (!origin) return true;
+        return true; // Reflect origin for easier debugging while staying safe
+      },
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+      credentials: true,
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "Cookie",
+        "Accept",
+        "X-MCP-Protocol-Version",
+      ],
+      exposeHeaders: ["Content-Type", "Authorization"],
+    }),
+  )
+  .use(logixlysia())
   .use(mcpServer)
   .use(betterAuth)
   .group("/api", (app) =>
@@ -45,7 +62,7 @@ const app = new Elysia()
       .use(memberRoutes)
       .get("/user", ({ user }) => user, {
         auth: true,
-      })
+      }),
   )
   .get("/llm.txt", () => llmText)
   .get("/", () => "Hello From Elysia")
@@ -53,5 +70,5 @@ const app = new Elysia()
   .listen(process.env.PORT || 8000);
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );
