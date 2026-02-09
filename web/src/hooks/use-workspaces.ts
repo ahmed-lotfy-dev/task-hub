@@ -26,3 +26,18 @@ export function useCreateWorkspace() {
     },
   });
 }
+
+export function useDeleteWorkspace() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (workspaceId: string) => {
+      return apiFetch<{ success: boolean; message: string }>(`/api/workspaces/${workspaceId}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+    },
+  });
+}

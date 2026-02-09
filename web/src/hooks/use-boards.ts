@@ -13,6 +13,16 @@ export function useBoards(workspaceId?: string) {
   });
 }
 
+export function useBoard(boardId?: string) {
+  return useQuery({
+    queryKey: ["boards", boardId],
+    queryFn: async () => {
+      return apiFetch<Board>(`/api/boards/${boardId}`);
+    },
+    enabled: !!boardId,
+  });
+}
+
 export function useCreateBoard() {
   const queryClient = useQueryClient();
 
