@@ -6,22 +6,25 @@ import { useSession } from '@/lib/auth-client'
 export function AuthenticatedLayout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { data: session, isPending } = useSession()
-  const [isChecking, setIsChecking] = useState(true)
+  const { data: session, isPending, isRefetching } = useSession()
+  const [hasChecked, setHasChecked] = useState(false)
 
   useEffect(() => {
-    if (!isPending) {
+    // Only redirect after we've confirmed there's no session
+    // Wait for both initial pending and any background refetching to complete
+    if (!isPending && !isRefetching) {
       if (!session) {
         console.warn('[AuthenticatedLayout] No session found, redirecting to login...')
         navigate('/login', {
           state: { redirect: location.pathname }
         })
       }
-      setIsChecking(false)
+      setHasChecked(true)
     }
-  }, [session, isPending, navigate, location.pathname])
+  }, [session, isPending, isRefetching, navigate, location.pathname])
 
-  if (isPending || isChecking) {
+  // Show loading spinner while checking authentication
+  if (isPending || isRefetching || !hasChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -29,6 +32,7 @@ export function AuthenticatedLayout() {
     )
   }
 
+  // If no session after checking, don't render anything (redirect will happen)
   if (!session) return null
 
   return (

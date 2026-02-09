@@ -25,6 +25,24 @@ export function LoginPage() {
     }
   }, [session, isSessionPending, navigate, redirect])
 
+  // Show loading state while checking session to prevent form flash
+  if (isSessionPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  // If already logged in, don't render the login form (redirect will happen)
+  if (session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)

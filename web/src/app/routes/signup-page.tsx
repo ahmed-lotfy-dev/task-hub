@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { authClient, useSession } from '@/lib/auth-client'
 import { toast } from 'sonner'
-import { Github, Loader2, Mail, Lock, User, CheckCircle2, Zap, Shield } from 'lucide-react'
+import { Github, Loader2, Mail, Lock, User, Zap, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router'
 import { Input } from '@/components/ui/input'
@@ -33,6 +33,24 @@ export function SignupPage() {
       navigate(redirect || '/home')
     }
   }, [session, isSessionPending, navigate, redirect])
+
+  // Show loading state while checking session to prevent form flash
+  if (isSessionPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  // If already logged in, don't render the signup form (redirect will happen)
+  if (session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   const {
     register,
