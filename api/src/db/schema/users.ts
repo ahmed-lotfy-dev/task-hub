@@ -9,7 +9,7 @@ export const users = pgTable('users', {
   role: text('role').notNull().default('user'),
 
   // Extended application fields
-  passwordHash: varchar('password_hash', { length: 255 }),
+  password: text('password'),
   avatarUrl: text('avatar_url'),
   timezone: varchar('timezone', { length: 50 }).notNull().default('UTC'),
   preferences: jsonb('preferences').notNull().default({
