@@ -8,6 +8,8 @@ export interface Workspace {
   settings: WorkspaceSettings;
   createdAt: string;
   updatedAt: string;
+  memberCount?: number;
+  role?: 'owner' | 'admin' | 'member' | 'guest';
 }
 
 export interface WorkspaceSettings {
