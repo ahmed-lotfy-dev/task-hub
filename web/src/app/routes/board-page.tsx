@@ -4,6 +4,7 @@ import { BoardColumn } from '@/features/board/components/BoardColumn/BoardColumn
 import { BoardHeader } from '@/features/board/components/BoardHeader/BoardHeader';
 import { TaskDetailDialog } from '@/features/board/components/Task/Dialog/TaskDetailDialog';
 import { BoardMenu } from '@/features/board/components/BoardMenu/BoardMenu';
+import { AddListColumn } from '@/features/board/components/AddListColumn/AddListColumn';
 import { useLists } from '@/hooks/use-lists'
 import { useTasks } from '@/hooks/use-tasks'
 import { useBoard } from '@/hooks/use-boards'
@@ -145,14 +146,9 @@ export function BoardPage() {
     )
   }
 
-  const bgStyle = {
-    background: (board?.background as any)?.type === 'image'
-      ? `url(${(board?.background as any).value}) center center / cover no-repeat`
-      : ((board?.background as any)?.value || '#f4f4f5'), // Zinc-100 (Clean Light Gray)
-  };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden" style={bgStyle}>
+    <div className="flex flex-col h-screen overflow-hidden">
       <div className="p-4 pb-0">
         <BoardHeader
           board={board}
@@ -214,6 +210,8 @@ export function BoardPage() {
                 );
               })}
             </SortableContext>
+
+            <AddListColumn boardId={boardId!} />
 
             {lists?.length === 0 && (
               <div className="shrink-0 w-[272px] flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/20 rounded-xl bg-white/10 backdrop-blur-sm self-start">

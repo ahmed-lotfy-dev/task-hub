@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import {  useQueries } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, Calendar, User, AlertCircle, ArrowUpDown } from 'lucide-react';
-import { TaskDetailDialog } from '@/features/board/components/TaskDetail';
+import { TaskDetailDialog } from '@/features/board/components/Task/Dialog/TaskDetailDialog';
 import { useTasks } from '@/hooks/use-tasks';
 import { useAuth } from '@/hooks/use-auth';
 import { useBoards } from '@/hooks/use-boards';

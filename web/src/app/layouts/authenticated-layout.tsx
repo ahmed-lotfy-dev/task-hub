@@ -1,6 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router'
 import { PersonalSidebar } from '@/components/app/personal-sidebar'
-import { apiFetch } from '@/lib/api'
 import { useEffect, useState } from 'react'
 import { useSession } from '@/lib/auth-client'
 
@@ -14,7 +13,7 @@ export function AuthenticatedLayout() {
     if (!isPending) {
       if (!session) {
         console.warn('[AuthenticatedLayout] No session found, redirecting to login...')
-        navigate('/login', { 
+        navigate('/login', {
           state: { redirect: location.pathname }
         })
       }
@@ -33,11 +32,11 @@ export function AuthenticatedLayout() {
   if (!session) return null
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
       <PersonalSidebar />
-      <main className="flex-1 p-12">
+      <main className="flex-1 overflow-y-auto h-full p-12">
         <Outlet />
       </main>
     </div>
-  )
+  );
 }

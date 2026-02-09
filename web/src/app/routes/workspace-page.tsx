@@ -1,8 +1,8 @@
 import { useParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Plus, Filter, ArrowUpDown, Search, Settings, Share2, Star, Users } from 'lucide-react'
-import { BoardColumn } from "@/features/board/components/BoardColumn";
-import { TaskCard } from "@/features/board/components/TaskCard";
+import { BoardColumn } from "@/features/board/components/BoardColumn/BoardColumn";
+import { TaskCard } from "@/features/board/components/TaskCard/TaskCard";
 
 export function WorkspacePage() {
   const { slug } = useParams<{ slug: string }>()
@@ -34,7 +34,7 @@ export function WorkspacePage() {
                 +8
               </div>
             </div>
-            <Button variant="white" className="flex items-center gap-2 cursor-pointer shadow-sm border border-zinc-100">
+            <Button variant="outline" className="flex items-center gap-2 cursor-pointer shadow-sm border border-zinc-100">
               <Share2 className="w-4 h-4" />
               Share
             </Button>

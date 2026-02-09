@@ -1,5 +1,5 @@
 import { useActivities } from "@/hooks/use-activities";
-import { ActivityItem } from "@/components/home/activity-item";
+import { ActivityItem } from "@/features/dashboard/components/ActivityItem/ActivityItem";
 import { Card } from "@/components/ui/card";
 import { History, Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router";

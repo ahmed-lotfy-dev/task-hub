@@ -4,11 +4,11 @@ import { useBoards as useRecentBoards } from "@/hooks/use-boards";
 import { useTasks as usePriorityTasks } from "@/hooks/use-tasks";
 import { useActivities } from "@/hooks/use-activities";
 import { useSession } from "@/lib/auth-client";
-import { HomeHeader } from "@/components/home/dashboard/home-header";
-import { HomeStats } from "@/components/home/dashboard/home-stats";
-import { RecentBoards } from "@/components/home/dashboard/recent-boards";
-import { PriorityTasks } from "@/components/home/dashboard/priority-tasks";
-import { HomeSidebar } from "@/components/home/dashboard/home-sidebar";
+import { HomeHeader } from "@/features/dashboard/components/HomeHeader/HomeHeader";
+import { HomeStats } from "@/features/dashboard/components/HomeStats/HomeStats";
+import { RecentBoards } from "@/features/dashboard/components/RecentBoards/RecentBoards";
+import { PriorityTasks } from "@/features/dashboard/components/PriorityTasks/PriorityTasks";
+import { HomeSidebar } from "@/features/dashboard/components/HomeSidebar/HomeSidebar";
 
 export function HomePage() {
   const { data: session } = useSession();
