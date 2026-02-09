@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,25 +16,26 @@ export function HomeHeader({ userName }: HomeHeaderProps) {
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-extrabold text-slate-900 tracking-tight font-sans"
+          className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight"
         >
-          Good Morning, <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-teal-500">{userName?.split(" ")[0]}!</span> 👋
+          Welcome back, <span className="text-primary">{userName?.split(" ")[0]}</span>
         </motion.h1>
-        <p className="text-slate-500 text-lg font-medium">
-          Here's your productivity overview for today.
+        <p className="text-muted-foreground text-base">
+          Here is a focused overview of your work today.
         </p>
       </div>
+
       <div className="flex items-center gap-3">
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-cyan-600 transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <input
             type="text"
             placeholder="Search tasks..."
-            className="pl-11 pr-4 py-3 rounded-2xl bg-white/50 backdrop-blur-sm shadow-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500/50 w-64 font-medium transition-all"
+            className="pl-10 pr-4 h-11 rounded-xl bg-card border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 w-64 text-sm font-medium transition-all"
           />
         </div>
         <GlobalCreateTaskDialog>
-          <Button className="flex items-center gap-2 cursor-pointer rounded-xl bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/10 transition-all hover:scale-105 active:scale-95">
+          <Button className="flex items-center gap-2 cursor-pointer rounded-xl">
             <Plus className="w-5 h-5" />
             New Task
           </Button>

@@ -22,17 +22,23 @@ export function RecentBoards({ boards }: RecentBoardsProps) {
   return (
     <section className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight font-sans">Recent Boards</h2>
-        <div className="flex items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Recent boards</h2>
+          <p className="text-sm text-muted-foreground">Pick up where you left off.</p>
+        </div>
+        <div className="flex items-center gap-3">
           <CreateBoardDialog>
-            <Button variant="ghost" size="sm" className="font-bold text-cyan-600 hover:text-cyan-700 hover:bg-cyan-50/50 transition-colors gap-2 rounded-xl">
+            <Button variant="outline" size="sm" className="gap-2 rounded-xl">
               <Plus className="w-4 h-4" />
-              New Board
+              New board
             </Button>
           </CreateBoardDialog>
-          <button className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors">View All</button>
+          <button className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">
+            View all
+          </button>
         </div>
       </div>
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {boards?.slice(0, 3).map((board, index) => (
           <BoardCard
@@ -45,18 +51,18 @@ export function RecentBoards({ boards }: RecentBoardsProps) {
           />
         ))}
         {(!boards || boards.length === 0) && (
-          <div className="col-span-full py-16 flex flex-col items-center justify-center bg-white/40 border-2 border-dashed border-slate-200 rounded-[32px] gap-6 group hover:border-cyan-500/20 transition-colors duration-300">
-            <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-cyan-50 transition-colors duration-300">
-              <Plus className="w-8 h-8 text-slate-400 group-hover:text-cyan-500 transition-colors duration-300" />
+          <div className="col-span-full py-12 flex flex-col items-center justify-center border border-dashed border-border rounded-2xl gap-4">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+              <Plus className="w-6 h-6 text-muted-foreground" />
             </div>
             <div className="flex flex-col items-center gap-2 text-center">
-              <p className="text-lg font-bold text-slate-700">No boards found</p>
-              <p className="text-sm text-slate-500 px-8">Create your first board to start organizing your project tasks and workflows.</p>
+              <p className="text-lg font-semibold text-foreground">No boards yet</p>
+              <p className="text-sm text-muted-foreground px-6">
+                Create your first board to start organizing tasks.
+              </p>
             </div>
             <CreateBoardDialog>
-              <Button className="rounded-full px-8 h-12 font-bold shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all bg-cyan-600 hover:bg-cyan-700 text-white">
-                Create First Board
-              </Button>
+              <Button className="rounded-xl px-6 h-10">Create board</Button>
             </CreateBoardDialog>
           </div>
         )}

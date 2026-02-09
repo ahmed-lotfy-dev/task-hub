@@ -18,8 +18,11 @@ interface HomeSidebarProps {
 export function HomeSidebar({ activities, workspaces }: HomeSidebarProps) {
   return (
     <div className="flex flex-col gap-8">
-      <section className="flex flex-col gap-6">
-        <h2 className="text-lg font-semibold">Team Activity</h2>
+      <section className="flex flex-col gap-4">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Team activity</h2>
+          <p className="text-sm text-muted-foreground">Latest updates across your workspace.</p>
+        </div>
         <Card className="p-4 flex flex-col gap-4">
           <div className="flex flex-col gap-4">
             {activities && activities.length > 0 ? (
@@ -34,24 +37,21 @@ export function HomeSidebar({ activities, workspaces }: HomeSidebarProps) {
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-6 text-center">
-                <p className="text-sm text-muted-foreground italic">
-                  No activity yet. Start by creating a task!
-                </p>
+                <p className="text-sm text-muted-foreground">No activity yet. Start by creating a task.</p>
               </div>
             )}
           </div>
-          <Button
-            variant="outline"
-            className="w-full mt-2"
-            asChild
-          >
-            <Link to="/activity">View Full History</Link>
+          <Button variant="outline" className="w-full mt-2" asChild>
+            <Link to="/activity">View full history</Link>
           </Button>
         </Card>
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">Workspaces</h2>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Workspaces</h2>
+          <p className="text-sm text-muted-foreground">Quick access to your spaces.</p>
+        </div>
         <div className="flex flex-col gap-2">
           {workspaces?.map((workspace) => (
             <WorkspaceMembersModal
@@ -67,12 +67,9 @@ export function HomeSidebar({ activities, workspaces }: HomeSidebarProps) {
             </WorkspaceMembersModal>
           ))}
           <CreateWorkspaceDialog>
-            <Button
-              variant="outline"
-              className="w-full border-dashed"
-            >
+            <Button variant="outline" className="w-full border-dashed">
               <Plus className="w-4 h-4 mr-2" />
-              New Workspace
+              New workspace
             </Button>
           </CreateWorkspaceDialog>
         </div>
