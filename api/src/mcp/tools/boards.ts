@@ -1,9 +1,9 @@
 import { db } from "../../db/db";
-import { boards, lists } from "../../db/schema";
-import { eq } from "drizzle-orm";
+import { lists } from "../../db/schema";
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logActivity } from "../../lib/activity-logger";
+import { BoardService } from "../../services/board.service";
 
 export const registerBoardTools = (server: McpServer) => {
   server.registerTool(
@@ -15,19 +15,22 @@ export const registerBoardTools = (server: McpServer) => {
       })
     },
     async ({ workspaceId }) => {
-      const data = await db
-        .select()
-        .from(boards)
-        .where(eq(boards.workspaceId, workspaceId));
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(data, null, 2)
-          }
-        ]
-      };
+      try {
+        const data = await BoardService.getWorkspaceBoards(workspaceId);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(data, null, 2)
+            }
+          ]
+        };
+      } catch (error: any) {
+        return {
+          content: [{ type: "text", text: `Error: ${error.message}` }],
+          isError: true
+        };
+      }
     }
   );
 
@@ -36,7 +39,6 @@ export const registerBoardTools = (server: McpServer) => {
     {
       description: "Create a new board in a workspace",
       inputSchema: z.object({
-        userId: z.string().describe("The ID of the user creating the board"),
         workspaceId: z.string().describe("The UUID of the workspace"),
         name: z.string().describe("The name of the board"),
         description: z.string().optional().describe("Board description"),
@@ -44,29 +46,34 @@ export const registerBoardTools = (server: McpServer) => {
         template: z.enum(["kanban", "scrum", "simple", "bug_tracker", "blank"]).optional().describe("Board template")
       })
     },
-    async ({ userId, workspaceId, name, description, visibility, template }) => {
-      const [board] = await db.insert(boards).values({
-        workspaceId: workspaceId,
-        name,
-        description: description ?? null,
-        visibility: visibility ?? "private",
-        template: template ?? "blank",
-      }).returning();
+    async ({ workspaceId, name, description, visibility, template }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
+      if (!userId) {
+        return {
+          content: [{ type: "text", text: "Error: No authenticated user found. Please provide a valid API key." }],
+          isError: true
+        };
+      }
 
-      await logActivity({
-        userId,
-        workspaceId: workspaceId,
-        boardId: board.id,
-        action: 'create',
-        entityType: 'board',
-        entityId: board.id,
-        entityName: board.name,
-        metadata: { via: 'mcp' }
-      });
+      try {
+        const board = await BoardService.createBoard({
+          workspaceId,
+          userId,
+          name,
+          description,
+          visibility,
+          template
+        });
 
-      return {
-        content: [{ type: "text", text: `Board '${name}' created (ID: ${board.id})` }]
-      };
+        return {
+          content: [{ type: "text", text: `Board '${name}' created (ID: ${board.id})` }]
+        };
+      } catch (error: any) {
+        return {
+          content: [{ type: "text", text: `Error creating board: ${error.message}` }],
+          isError: true
+        };
+      }
     }
   );
 
@@ -75,34 +82,146 @@ export const registerBoardTools = (server: McpServer) => {
     {
       description: "Create a new list on a board",
       inputSchema: z.object({
-        userId: z.string().describe("The ID of the user creating the list"),
         boardId: z.string().describe("The UUID of the board"),
-        workspaceId: z.string().describe("The UUID of the workspace (needed for logging)"),
         name: z.string().describe("The name of the list"),
         position: z.number().optional().describe("Sort position")
       })
     },
-    async ({ userId, boardId, workspaceId, name, position }) => {
-      const [list] = await db.insert(lists).values({
-        boardId: boardId,
-        name,
-        position: position ?? 1000,
-      }).returning();
+    async ({ boardId, name, position }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
+      if (!userId) {
+        return {
+          content: [{ type: "text", text: "Error: No authenticated user found. Please provide a valid API key." }],
+          isError: true
+        };
+      }
 
-      await logActivity({
-        userId,
-        workspaceId: workspaceId,
-        boardId: boardId,
-        action: 'create',
-        entityType: 'list',
-        entityId: list.id,
-        entityName: list.name,
-        metadata: { via: 'mcp' }
-      });
+      try {
+        const list = await ListService.createList({
+          boardId,
+          userId,
+          name,
+          position
+        });
 
-      return {
-        content: [{ type: "text", text: `List '${name}' created (ID: ${list.id})` }]
-      };
+        return {
+          content: [{ type: "text", text: `List '${name}' created (ID: ${list.id})` }]
+        };
+      } catch (error: any) {
+        return {
+          content: [{ type: "text", text: `Error creating list: ${error.message}` }],
+          isError: true
+        };
+      }
+    }
+  );
+
+  server.registerTool(
+    "get_board",
+    {
+      description: "Get detailed information about a board",
+      inputSchema: z.object({
+        boardId: z.string().uuid().describe("The UUID of the board")
+      })
+    },
+    async ({ boardId }) => {
+      try {
+        const board = await BoardService.getBoardById(boardId);
+
+        if (!board) {
+          return {
+            content: [{ type: "text", text: "Board not found" }],
+            isError: true
+          };
+        }
+
+        return {
+          content: [{ type: "text", text: JSON.stringify(board, null, 2) }]
+        };
+      } catch (error: any) {
+        return {
+          content: [{ type: "text", text: `Error fetching board: ${error.message}` }],
+          isError: true
+        };
+      }
+    }
+  );
+
+  server.registerTool(
+    "update_board",
+    {
+      description: "Update board details",
+      inputSchema: z.object({
+        boardId: z.string().uuid().describe("The UUID of the board"),
+        name: z.string().optional().describe("New name"),
+        description: z.string().optional().describe("New description"),
+        visibility: z.enum(["private", "team", "public"]).optional().describe("New visibility"),
+        archived: z.boolean().optional().describe("Archive status")
+      })
+    },
+    async ({ boardId, name, description, visibility, archived }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
+      if (!userId) {
+        return {
+          content: [{ type: "text", text: "Error: No authenticated user found. Please provide a valid API key." }],
+          isError: true
+        };
+      }
+      try {
+        const updated = await BoardService.updateBoard(boardId, userId, {
+          name,
+          description,
+          visibility,
+          archived
+        });
+
+        if (!updated) {
+          return { content: [{ type: "text", text: "Board not found or update failed" }], isError: true };
+        }
+
+        return {
+          content: [{ type: "text", text: `Board updated successfully` }]
+        };
+      } catch (error: any) {
+        return {
+          content: [{ type: "text", text: `Error updating board: ${error.message}` }],
+          isError: true
+        };
+      }
+    }
+  );
+
+  server.registerTool(
+    "delete_board",
+    {
+      description: "Delete a board",
+      inputSchema: z.object({
+        boardId: z.string().uuid().describe("The UUID of the board")
+      })
+    },
+    async ({ boardId }, extra: any) => {
+      const userId = extra?.authInfo?.userId;
+      if (!userId) {
+        return {
+          content: [{ type: "text", text: "Error: No authenticated user found. Please provide a valid API key." }],
+          isError: true
+        };
+      }
+      try {
+        const deleted = await BoardService.deleteBoard(boardId, userId);
+
+        if (!deleted) {
+          return { content: [{ type: "text", text: "Board not found" }], isError: true };
+        }
+
+        return { content: [{ type: "text", text: `Board '${deleted.name}' deleted` }] };
+      } catch (error: any) {
+        return {
+          content: [{ type: "text", text: `Error deleting board: ${error.message}` }],
+          isError: true
+        };
+      }
     }
   );
 };
+
