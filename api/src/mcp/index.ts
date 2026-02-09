@@ -42,6 +42,7 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
   .use(
     mcp({
       stateless: true,
+      enableJsonResponse: true,
       serverInfo: {
         name: "Task Hub AI Bridge",
         version: "1.0.0",
