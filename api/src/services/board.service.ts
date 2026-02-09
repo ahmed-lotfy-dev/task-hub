@@ -44,16 +44,18 @@ export class BoardService {
       if (template === "kanban" || template === "simple") {
         boardLists = [
           { name: "Backlog", position: 1000 },
-          { name: "In Progress", position: 2000 },
-          { name: "Review", position: 3000 },
-          { name: "Done", position: 4000 },
+          { name: "Todo", position: 2000 },
+          { name: "In Progress", position: 3000 },
+          { name: "Review", position: 4000 },
+          { name: "Done", position: 5000 },
         ];
       } else if (template === "scrum") {
         boardLists = [
           { name: "Backlog", position: 1024 },
-          { name: "In Progress", position: 2048 },
-          { name: "Review", position: 3072 },
-          { name: "Done", position: 4096 },
+          { name: "Todo", position: 2048 },
+          { name: "In Progress", position: 3072 },
+          { name: "Review", position: 4096 },
+          { name: "Done", position: 5120 },
         ];
       } else if (template === "bug_tracker") {
         boardLists = [

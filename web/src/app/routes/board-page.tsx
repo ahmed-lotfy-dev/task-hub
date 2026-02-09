@@ -20,10 +20,7 @@ import {
   pointerWithin,
   closestCenter,
 } from '@dnd-kit/core'
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { createPortal } from 'react-dom'
 import { useState } from 'react'
 import { SortableTaskCard } from '@/features/board/components/SortableTaskCard/SortableTaskCard'
@@ -199,13 +196,20 @@ export function BoardPage() {
 
     try {
       // Calculate position based on tasks in target list
-      const targetListTasks = tasks?.filter(t => t.listId === overListId).sort((a, b) => a.position - b.position) || []
-      const overTaskIndex = targetListTasks.findIndex(t => t.id === overId)
-      
+      const targetListTasks =
+        tasks
+          ?.filter((t) => t.listId === overListId)
+          .sort((a, b) => a.position - b.position) || []
+      const overTaskIndex = targetListTasks.findIndex((t) => t.id === overId)
+
       let newPosition: number
-      if (overTaskIndex === -1 || overTaskIndex === targetListTasks.length - 1) {
+      if (
+        overTaskIndex === -1 ||
+        overTaskIndex === targetListTasks.length - 1
+      ) {
         // Dropped at the end - use position after last task
-        const lastPosition = targetListTasks[targetListTasks.length - 1]?.position ?? 0
+        const lastPosition =
+          targetListTasks[targetListTasks.length - 1]?.position ?? 0
         newPosition = lastPosition + 1000
       } else if (overTaskIndex === 0) {
         // Dropped at the beginning - use half of first task's position
@@ -216,7 +220,7 @@ export function BoardPage() {
         const nextPosition = targetListTasks[overTaskIndex].position
         newPosition = Math.floor((prevPosition + nextPosition) / 2)
       }
-      
+
       await updateTask.mutateAsync({
         id: activeId,
         data: {
@@ -264,8 +268,7 @@ export function BoardPage() {
         <div className="flex-1 overflow-x-auto overflow-y-hidden custom-scrollbar">
           <div className="flex gap-4 p-4 h-full items-start">
             {lists?.map((list) => {
-              const listTasks =
-                tasks?.filter((t) => t.listId === list.id) || []
+              const listTasks = tasks?.filter((t) => t.listId === list.id) || []
               const filteredTasks = listTasks.filter((task) =>
                 task.title.toLowerCase().includes(searchQuery.toLowerCase()),
               )

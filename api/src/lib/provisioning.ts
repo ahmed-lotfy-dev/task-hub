@@ -37,8 +37,8 @@ export async function ensureUserOnboarding(userId: string) {
     await logActivity({
       userId,
       workspaceId: workspace.id,
-      action: 'create',
-      entityType: 'workspace',
+      action: "create",
+      entityType: "workspace",
       entityId: workspace.id,
       entityName: workspace.name,
     });
@@ -66,8 +66,8 @@ export async function ensureUserOnboarding(userId: string) {
       userId,
       workspaceId: workspace.id,
       boardId: board.id,
-      action: 'create',
-      entityType: 'board',
+      action: "create",
+      entityType: "board",
       entityId: board.id,
       entityName: board.name,
     });
@@ -89,5 +89,7 @@ export async function ensureUserOnboarding(userId: string) {
     }
   });
 
-  console.log(`Successfully provisioned default environment for user: ${userId}`);
+  console.log(
+    `Successfully provisioned default environment for user: ${userId}`,
+  );
 }
