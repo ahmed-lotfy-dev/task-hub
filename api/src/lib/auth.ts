@@ -27,8 +27,6 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       enabled: true,
-      // Force account selection prompt to show all Google accounts
-      authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth?prompt=select_account",
     },
   },
 

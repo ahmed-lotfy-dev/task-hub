@@ -29,17 +29,20 @@ export function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      await authClient.signIn.email({
-        email,
-        password,
-      }, {
-        onSuccess: () => {
-          navigate(redirect || '/home')
+      await authClient.signIn.email(
+        {
+          email,
+          password,
         },
-        onError: (ctx) => {
-          toast.error(ctx.error.message || 'Failed to sign in')
-        }
-      })
+        {
+          onSuccess: () => {
+            navigate(redirect || '/home')
+          },
+          onError: (ctx) => {
+            toast.error(ctx.error.message || 'Failed to sign in')
+          },
+        },
+      )
     } catch (err) {
       toast.error('Something went wrong')
     } finally {
@@ -52,19 +55,14 @@ export function LoginPage() {
     try {
       const baseUrl = window.location.origin
       const redirectPath = redirect || '/home'
-      const callbackURL = redirectPath.startsWith('http') ? redirectPath : `${baseUrl}${redirectPath}`
+      const callbackURL = redirectPath.startsWith('http')
+        ? redirectPath
+        : `${baseUrl}${redirectPath}`
 
+      // OAuth sign-in redirects the browser - no callbacks needed
       await authClient.signIn.social({
         provider,
         callbackURL,
-      }, {
-        onSuccess: () => {
-          navigate(redirect || '/home')
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message || `Failed to sign in with ${provider}`)
-          setIsLoading(false)
-        }
       })
     } catch (err) {
       toast.error(`Failed to sign in with ${provider}`)
@@ -81,8 +79,12 @@ export function LoginPage() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-cyan-500/20">T</div>
-            <span className="text-2xl font-extrabold tracking-tight font-sans">Task<span className="text-cyan-400">Hub</span></span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-cyan-500/20">
+              T
+            </div>
+            <span className="text-2xl font-extrabold tracking-tight font-sans">
+              Task<span className="text-cyan-400">Hub</span>
+            </span>
           </div>
         </div>
 
@@ -94,22 +96,31 @@ export function LoginPage() {
               </div>
               <div>
                 <h4 className="font-bold text-lg">Sarah Johnson</h4>
-                <p className="text-slate-400 text-sm">Product Manager at TechFlow</p>
+                <p className="text-slate-400 text-sm">
+                  Product Manager at TechFlow
+                </p>
               </div>
             </div>
             <p className="text-slate-300 text-lg leading-relaxed font-medium">
-              "TaskHub completely transformed how our team operates. The clarity and focus it provides is unmatched by any other tool we've used."
+              "TaskHub completely transformed how our team operates. The clarity
+              and focus it provides is unmatched by any other tool we've used."
             </p>
           </div>
 
           <div className="flex gap-4">
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm font-medium text-slate-300"> SOC2 Compliant</span>
+              <span className="text-sm font-medium text-slate-300">
+                {' '}
+                SOC2 Compliant
+              </span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
               <Zap className="w-4 h-4 text-amber-400" />
-              <span className="text-sm font-medium text-slate-300"> 99.9% Uptime</span>
+              <span className="text-sm font-medium text-slate-300">
+                {' '}
+                99.9% Uptime
+              </span>
             </div>
           </div>
         </div>
@@ -123,7 +134,9 @@ export function LoginPage() {
       <div className="flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900 font-sans">Welcome back</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 font-sans">
+              Welcome back
+            </h1>
             <p className="text-slate-500">
               Enter your credentials to access your workspace
             </p>
@@ -150,7 +163,10 @@ export function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" className="text-xs font-medium text-cyan-600 hover:text-cyan-700">
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-medium text-cyan-600 hover:text-cyan-700"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -169,8 +185,14 @@ export function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-11 bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-lg shadow-slate-900/10" disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            <Button
+              type="submit"
+              className="w-full h-11 bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-lg shadow-slate-900/10"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
               Sign in with Email
             </Button>
           </form>
@@ -180,7 +202,9 @@ export function LoginPage() {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#F8FAFC] px-2 text-slate-500">Or continue with</span>
+              <span className="bg-[#F8FAFC] px-2 text-slate-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -212,7 +236,10 @@ export function LoginPage() {
 
           <p className="text-center text-sm text-slate-500">
             Don&apos;t have an account?{' '}
-            <Link to="/signup" className="font-semibold text-cyan-600 hover:text-cyan-700 hover:underline underline-offset-4">
+            <Link
+              to="/signup"
+              className="font-semibold text-cyan-600 hover:text-cyan-700 hover:underline underline-offset-4"
+            >
               Sign up for free
             </Link>
           </p>

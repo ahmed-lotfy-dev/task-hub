@@ -21,12 +21,14 @@ export const activities = pgTable(
     entityName: varchar('entity_name', { length: 200 }),
     metadata: jsonb('metadata').notNull().default({}),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }), // Soft delete timestamp
   },
   (table) => ({
     userIdIdx: index('activities_user_id_idx').on(table.userId),
     workspaceIdIdx: index('activities_workspace_id_idx').on(table.workspaceId),
     boardIdIdx: index('activities_board_id_idx').on(table.boardId),
     createdAtIdx: index('activities_created_at_idx').on(table.createdAt),
+    deletedAtIdx: index('activities_deleted_at_idx').on(table.deletedAt),
   })
 );
 

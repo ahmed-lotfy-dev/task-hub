@@ -46,5 +46,6 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 WORKDIR /app/web
-# Standard Nitro entrypoint
-CMD ["bun", "run", ".output/server/index.mjs"]
+# Install serve globally and serve the dist folder
+RUN bun add -g serve
+CMD ["serve", "dist", "-l", "3000", "-s"]

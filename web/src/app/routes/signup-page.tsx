@@ -69,12 +69,13 @@ export function SignupPage() {
   const handleSocialSignIn = async (provider: 'google' | 'github') => {
     setIsSocialLoading(provider)
     try {
+      const callbackURL = redirect || `${window.location.origin}/home`
       await authClient.signIn.social({
         provider,
-        callbackURL: redirect || `${window.location.origin}/home`,
+        callbackURL,
       })
-    } catch (err) {
-      toast.error(`Failed to sign in with ${provider}`)
+    } catch (err: any) {
+      toast.error(err?.message || `Failed to sign in with ${provider}`)
       setIsSocialLoading(null)
     }
   }
