@@ -1,55 +1,33 @@
 import { Elysia, t } from "elysia";
-import { db } from "../db/db";
-import { cards, lists, boards, workspaceMembers, boardMembers, cardComments, cardAssignees, users } from "../db/schema";
-import { eq, and, or, sql } from "drizzle-orm";
+import { TaskService } from "../services/task.service";
+import { User } from "@taskflow/shared";
 import { betterAuth } from "../middleware/auth-middleware";
-import { logActivity } from "../lib/activity-logger";
-import { Card as Task, User } from "@taskflow/shared";
-import { mcpEvents } from "../lib/mcp-events";
+
+function mapTask(c: any) {
+  return {
+    ...c,
+    createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : c.createdAt,
+    updatedAt: c.updatedAt instanceof Date ? c.updatedAt.toISOString() : c.updatedAt,
+    dueDate: (c.dueDate instanceof Date) ? c.dueDate.toISOString() : (c.dueDate ?? null),
+    startDate: (c.startDate instanceof Date) ? c.startDate.toISOString() : (c.startDate ?? null),
+    priority: c.priority as any,
+  };
+}
 
 export const taskRoutes = new Elysia({ prefix: "/tasks" })
+  .use(betterAuth)
   .get("/", async (context: any) => {
     const user = context.user as User;
     const { boardId } = context.query;
 
-    const data = await db
-      .select({
-        card: cards,
-        commentCount: sql<number>`(SELECT count(*) FROM ${cardComments} WHERE ${cardComments.cardId} = ${cards.id})`.mapWith(Number),
-        assignees: sql<any[]>`coalesce(
-          (SELECT json_agg(json_build_object('id', u.id, 'name', u.name, 'image', u.image))
-           FROM ${cardAssignees} ca
-           JOIN ${users} u ON ca.user_id = u.id
-           WHERE ca.card_id = ${cards.id}),
-          '[]'
-        )`
-      })
-      .from(cards)
-      .innerJoin(boards, eq(cards.boardId, boards.id))
-      .where(
-        and(
-          boardId ? eq(cards.boardId, boardId) : undefined,
-          or(
-            sql`EXISTS (SELECT 1 FROM ${workspaceMembers} WHERE ${workspaceMembers.workspaceId} = ${boards.workspaceId} AND ${workspaceMembers.userId} = ${user.id})`,
-            sql`EXISTS (SELECT 1 FROM ${boardMembers} WHERE ${boardMembers.boardId} = ${boards.id} AND ${boardMembers.userId} = ${user.id})`
-          )
-        )
-      )
-      .limit(50);
+    if (boardId) {
+      const tasks = await TaskService.getBoardTasks(boardId, user.id);
+      return tasks.map(mapTask);
+    }
 
-    return data.map((d) => {
-      const c = d.card;
-      return {
-        ...c,
-        commentCount: d.commentCount,
-        assignees: d.assignees,
-        createdAt: c.createdAt.toISOString(),
-        updatedAt: c.updatedAt.toISOString(),
-        dueDate: c.dueDate?.toISOString() ?? null,
-        startDate: c.startDate?.toISOString() ?? null,
-        priority: c.priority as any,
-      };
-    });
+    // Default: Get priority tasks for the user dashboard
+    const tasks = await TaskService.getUserPriorityTasks(user.id);
+    return tasks.map(mapTask);
   }, {
     auth: true,
     query: t.Object({
@@ -60,46 +38,14 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
     const { id } = context.params;
     const user = context.user as User;
 
-    const [data] = await db
-      .select({
-        card: cards,
-        assignees: sql<any[]>`coalesce(
-          (SELECT json_agg(json_build_object('id', u.id, 'name', u.name, 'image', u.image))
-           FROM ${cardAssignees} ca
-           JOIN ${users} u ON ca.user_id = u.id
-           WHERE ca.card_id = ${cards.id}),
-          '[]'
-        )`
-      })
-      .from(cards)
-      .innerJoin(boards, eq(cards.boardId, boards.id))
-      .where(
-        and(
-          eq(cards.id, id),
-          or(
-            sql`EXISTS (SELECT 1 FROM ${workspaceMembers} WHERE ${workspaceMembers.workspaceId} = ${boards.workspaceId} AND ${workspaceMembers.userId} = ${user.id})`,
-            sql`EXISTS (SELECT 1 FROM ${boardMembers} WHERE ${boardMembers.boardId} = ${boards.id} AND ${boardMembers.userId} = ${user.id})`
-          )
-        )
-      )
-      .limit(1);
+    const task = await TaskService.getTaskById(id, user.id);
 
-    if (!data) {
-      throw new Error("Task not found or access denied");
+    if (!task) {
+      context.set.status = 404;
+      return { message: "Task not found" };
     }
 
-    console.log(`[Backend] Fetched task ${id}, assignees:`, data.assignees);
-
-    const c = data.card;
-    return {
-      ...c,
-      assignees: data.assignees,
-      createdAt: c.createdAt.toISOString(),
-      updatedAt: c.updatedAt.toISOString(),
-      dueDate: c.dueDate?.toISOString() ?? null,
-      startDate: c.startDate?.toISOString() ?? null,
-      priority: c.priority as any,
-    };
+    return mapTask(task);
   }, {
     auth: true,
     params: t.Object({
@@ -108,53 +54,15 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
   })
   .post("/", async (context: any) => {
     const body = context.body;
-    const [card] = await db.insert(cards).values({
-      ...body,
-      priority: body.priority as any,
-    }).returning();
-    const c = card;
-
     const user = context.user as User;
-    // Get workspaceId for logging
-    const [board] = await db.select().from(boards).where(eq(boards.id, c.boardId)).limit(1);
 
-    if (board) {
-      await logActivity({
-        userId: user.id,
-        workspaceId: board.workspaceId,
-        boardId: board.id,
-        action: 'create',
-        entityType: 'card',
-        entityId: c.id,
-        entityName: c.title,
-      });
+    const task = await TaskService.createTask({
+      ...body,
+      userId: user.id,
+      priority: body.priority as any
+    });
 
-      mcpEvents.emitTaskEvent({
-        type: "task:created",
-        task: {
-          id: c.id,
-          title: c.title,
-          boardId: c.boardId,
-          workspaceId: board.workspaceId,
-          listId: c.listId,
-          description: c.description || undefined,
-          priority: c.priority || undefined,
-        },
-        userId: user.id,
-        workspaceId: board.workspaceId,
-        timestamp: new Date().toISOString(),
-      });
-    }
-
-    return {
-      ...c,
-      assignees: [],
-      createdAt: c.createdAt.toISOString(),
-      updatedAt: c.updatedAt.toISOString(),
-      dueDate: c.dueDate?.toISOString() ?? null,
-      startDate: c.startDate?.toISOString() ?? null,
-      priority: c.priority as any,
-    };
+    return mapTask(task);
   }, {
     auth: true,
     body: t.Object({
@@ -171,39 +79,14 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
     const body = context.body;
     const user = context.user as User;
 
-    const [card] = await db.update(cards)
-      .set(body)
-      .where(eq(cards.id, id))
-      .returning();
-    const c = card;
+    const task = await TaskService.updateTask(id, user.id, body as any);
 
-    const [board] = await db.select().from(boards).where(eq(boards.id, c.boardId)).limit(1);
-    if (board) {
-      mcpEvents.emitTaskEvent({
-        type: "task:updated",
-        task: {
-          id: c.id,
-          title: c.title,
-          boardId: c.boardId,
-          workspaceId: board.workspaceId,
-          listId: c.listId,
-          description: c.description || undefined,
-          priority: c.priority || undefined,
-        },
-        userId: user.id,
-        workspaceId: board.workspaceId,
-        timestamp: new Date().toISOString(),
-      });
+    if (!task) {
+      context.set.status = 404;
+      return { message: "Task not found" };
     }
 
-    return {
-      ...c,
-      createdAt: c.createdAt.toISOString(),
-      updatedAt: c.updatedAt.toISOString(),
-      dueDate: c.dueDate?.toISOString() ?? null,
-      startDate: c.startDate?.toISOString() ?? null,
-      priority: c.priority as any,
-    };
+    return mapTask(task);
   }, {
     auth: true,
     body: t.Object({
@@ -219,42 +102,12 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
     const { id } = context.params;
     const user = context.user as User;
 
-    // Get task for logging before deletion
-    const [card] = await db
-      .select()
-      .from(cards)
-      .where(eq(cards.id, id))
-      .limit(1);
+    const deleted = await TaskService.deleteTask(id, user.id);
 
-    if (card) {
-      const [board] = await db.select().from(boards).where(eq(boards.id, card.boardId)).limit(1);
-      if (board) {
-        await logActivity({
-          userId: user.id,
-          workspaceId: board.workspaceId,
-          boardId: board.id,
-          action: 'delete',
-          entityType: 'card',
-          entityId: card.id,
-          entityName: card.title,
-        });
-
-        mcpEvents.emitTaskEvent({
-          type: "task:deleted",
-          task: {
-            id: card.id,
-            title: card.title,
-            boardId: card.boardId,
-            workspaceId: board.workspaceId,
-          },
-          userId: user.id,
-          workspaceId: board.workspaceId,
-          timestamp: new Date().toISOString(),
-        });
-      }
+    if (!deleted) {
+      context.set.status = 404;
+      return { message: "Task not found" };
     }
-
-    await db.delete(cards).where(eq(cards.id, id));
 
     return { success: true };
   }, {
@@ -266,53 +119,10 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
   .post("/:id/assignees", async (context: any) => {
     const { id } = context.params;
     const { userId } = context.body;
-    console.log(`[Backend] Assigning user ${userId} to task ${id}`);
+    const user = context.user as User;
 
-    try {
-      await db.insert(cardAssignees).values({
-        cardId: id,
-        userId
-      }).onConflictDoNothing();
-
-      // Log assignment activity
-      const [card] = await db.select().from(cards).where(eq(cards.id, id)).limit(1);
-      if (card) {
-        const [board] = await db.select().from(boards).where(eq(boards.id, card.boardId)).limit(1);
-        if (board) {
-          const user = context.user as User;
-          await logActivity({
-            userId: user.id,
-            workspaceId: board.workspaceId,
-            boardId: board.id,
-            action: 'assign',
-            entityType: 'card',
-            entityId: card.id,
-            entityName: card.title,
-            metadata: { assignedUserId: userId }
-          });
-
-          mcpEvents.emitTaskEvent({
-            type: "task:assigned",
-            task: {
-              id: card.id,
-              title: card.title,
-              boardId: card.boardId,
-              workspaceId: board.workspaceId,
-              assignedUserId: userId,
-            },
-            userId: user.id,
-            workspaceId: board.workspaceId,
-            timestamp: new Date().toISOString(),
-          });
-        }
-      }
-
-      console.log(`[Backend] Assignment successful for ${userId}`);
-      return { success: true };
-    } catch (error: any) {
-      console.error(`[Backend] Assignment failed for ${userId}:`, error);
-      throw error;
-    }
+    await TaskService.assignUser(id, userId, user.id);
+    return { success: true };
   }, {
     auth: true,
     params: t.Object({ id: t.String() }),
@@ -321,14 +131,7 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
   .delete("/:id/assignees/:userId", async (context: any) => {
     const { id, userId } = context.params;
 
-    await db.delete(cardAssignees)
-      .where(
-        and(
-          eq(cardAssignees.cardId, id),
-          eq(cardAssignees.userId, userId)
-        )
-      );
-
+    await TaskService.unassignUser(id, userId);
     return { success: true };
   }, {
     auth: true,
@@ -337,3 +140,4 @@ export const taskRoutes = new Elysia({ prefix: "/tasks" })
       userId: t.String()
     })
   });
+
