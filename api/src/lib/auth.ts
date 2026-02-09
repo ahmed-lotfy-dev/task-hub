@@ -21,10 +21,12 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      enabled: true,
     },
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      enabled: true,
       // Force account selection prompt to show all Google accounts
       authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth?prompt=select_account",
     },
@@ -70,6 +72,9 @@ export const auth = betterAuth({
     trustedProxyHeaders: true,
   },
   account: {
-    skipStateCookieCheck: true,
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "github"],
+    },
   },
 });
