@@ -37,32 +37,32 @@ export function BoardMenu({ open, onOpenChange, board, activities = [] }: BoardM
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="w-[340px] sm:w-[340px] p-0 flex flex-col gap-0" side="right">
           <SheetHeader className="p-4 border-b">
-            <SheetTitle className="text-center text-sm font-semibold text-[#172b4d]">Menu</SheetTitle>
+            <SheetTitle className="text-center text-sm font-semibold text-foreground">Menu</SheetTitle>
           </SheetHeader>
 
           <ScrollArea className="flex-1">
             <div className="p-4 flex flex-col gap-4">
               {/* Menu Items */}
               <div className="flex flex-col gap-1">
-                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-[#172b4d]" onClick={() => console.log("About")}>
+                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-foreground" onClick={() => console.log("About")}>
                   <div className="w-5 h-5 flex items-center justify-center">
                     <CreditCard className="w-4 h-4" />
                   </div>
                   About this board
                 </Button>
-                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-[#172b4d]" onClick={() => console.log("Background")}>
+                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-foreground" onClick={() => console.log("Background")}>
                   <div className="w-5 h-5 flex items-center justify-center">
                     <ImageIcon className="w-4 h-4" />
                   </div>
                   Change background
                 </Button>
-                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-[#172b4d]" onClick={() => setIsSettingsOpen(true)}>
+                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-foreground" onClick={() => setIsSettingsOpen(true)}>
                   <div className="w-5 h-5 flex items-center justify-center">
                     <Settings className="w-4 h-4" />
                   </div>
                   Settings
                 </Button>
-                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-[#172b4d] hover:bg-red-50 hover:text-red-600">
+                <Button variant="ghost" className="justify-start gap-2 h-9 px-2 font-normal text-foreground hover:bg-red-50 hover:text-red-600">
                   <div className="w-5 h-5 flex items-center justify-center">
                     <Archive className="w-4 h-4" />
                   </div>
@@ -74,7 +74,7 @@ export function BoardMenu({ open, onOpenChange, board, activities = [] }: BoardM
 
               {/* Activity Section */}
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-[#172b4d] font-semibold text-sm">
+                <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
                   <Activity className="w-4 h-4" />
                   Activity
                 </div>
@@ -84,13 +84,13 @@ export function BoardMenu({ open, onOpenChange, board, activities = [] }: BoardM
                     <div key={activity.id} className="flex gap-2 text-sm">
                       <Avatar className="w-8 h-8 cursor-pointer">
                         <AvatarImage src={activity.user.image} />
-                        <AvatarFallback className="text-xs bg-[#dfe1e6] text-[#172b4d]">{activity.user.fallback}</AvatarFallback>
+                        <AvatarFallback className="text-xs bg-muted text-foreground">{activity.user.fallback}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="text-[#172b4d]">
+                        <span className="text-foreground">
                           <span className="font-semibold">{activity.user.name}</span> {activity.action} <span className="underline decoration-1 cursor-pointer">{activity.target}</span>
                         </span>
-                        <span className="text-xs text-[#5e6c84]">{formatDistanceToNow(activity.time, { addSuffix: true })}</span>
+                        <span className="text-xs text-muted-foreground">{formatDistanceToNow(activity.time, { addSuffix: true })}</span>
                       </div>
                     </div>
                   ))}

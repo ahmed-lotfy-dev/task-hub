@@ -16,21 +16,21 @@ export function WorkspacePage() {
               {slug![0].toUpperCase()}
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-[#2D3748] tracking-tight flex items-center gap-3">
+              <h1 className="text-3xl font-extrabold text-foreground tracking-tight flex items-center gap-3">
                 {slug}
                 <Star className="w-6 h-6 text-zinc-300 hover:text-accent cursor-pointer transition-colors" />
               </h1>
               <p className="text-muted-foreground font-medium flex items-center gap-1">
-                Team Workspace <span className="mx-2">•</span> <Users className="w-4 h-4" /> 12 Members
+                Team Workspace <span className="mx-2">-</span> <Users className="w-4 h-4" /> 12 Members
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex -space-x-3 mr-4">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-10 h-10 rounded-full border-4 border-[#F8FAFC] bg-zinc-200 cursor-pointer hover:translate-y-[-4px] transition-transform" />
+                <div key={i} className="w-10 h-10 rounded-full border-4 border-background bg-zinc-200 cursor-pointer hover:translate-y-[-4px] transition-transform" />
               ))}
-              <div className="w-10 h-10 rounded-full border-4 border-[#F8FAFC] bg-white flex items-center justify-center text-xs font-bold text-zinc-400 shadow-sm cursor-pointer hover:translate-y-[-4px] transition-transform">
+              <div className="w-10 h-10 rounded-full border-4 border-background bg-white flex items-center justify-center text-xs font-bold text-zinc-400 shadow-sm cursor-pointer hover:translate-y-[-4px] transition-transform">
                 +8
               </div>
             </div>

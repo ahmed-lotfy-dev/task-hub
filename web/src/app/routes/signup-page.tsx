@@ -37,7 +37,7 @@ export function SignupPage() {
   // Show loading state while checking session to prevent form flash
   if (isSessionPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     )
@@ -46,7 +46,7 @@ export function SignupPage() {
   // If already logged in, don't render the signup form (redirect will happen)
   if (session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     )
@@ -99,7 +99,7 @@ export function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-[#F8FAFC]">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-background">
       {/* Left Column - Visual */}
       <div className="hidden lg:flex flex-col justify-between p-12 bg-slate-900 relative overflow-hidden text-white">
         <div className="absolute top-0 left-0 w-150 h-150 bg-linear-to-br from-indigo-500/20 to-purple-500/20 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
@@ -215,7 +215,7 @@ export function SignupPage() {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#F8FAFC] px-2 text-slate-500">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
             </div>
           </div>
 

@@ -21,7 +21,7 @@ export function TaskDetailDescription({
 
       <div className="relative">
         <Textarea
-          className="min-h-[180px] p-4 text-sm font-medium leading-relaxed bg-[#F9FBFF]/30 border-none shadow-none ring-1 ring-zinc-200/50 focus-visible:ring-primary/20 focus-visible:bg-white resize-none transition-all rounded-2xl placeholder:text-zinc-300 placeholder:italic"
+          className="min-h-[180px] p-4 text-sm font-medium leading-relaxed bg-muted/30 border-none shadow-none ring-1 ring-zinc-200/50 focus-visible:ring-primary/20 focus-visible:bg-white resize-none transition-all rounded-2xl placeholder:text-zinc-300 placeholder:italic"
           placeholder="Add a more detailed description about this task..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}

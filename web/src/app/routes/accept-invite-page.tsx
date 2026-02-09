@@ -76,7 +76,7 @@ export function AcceptInvitePage() {
   // Loading state
   if (isVerifying || isSessionPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-6">
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
@@ -90,7 +90,7 @@ export function AcceptInvitePage() {
   // Invalid or expired invitation
   if (!verification?.valid || verifyError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-6">
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">
@@ -115,7 +115,7 @@ export function AcceptInvitePage() {
   // Success state after acceptance
   if (accepted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-6">
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
@@ -140,7 +140,7 @@ export function AcceptInvitePage() {
   const isMatchingEmail = session?.user?.email === details.invitation.email
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] p-6">
+    <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">

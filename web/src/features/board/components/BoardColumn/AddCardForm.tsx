@@ -77,7 +77,7 @@ export function AddCardForm({ listId, boardId, onCancel }: AddCardFormProps) {
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-[#42526e] hover:bg-[#091e42]/10"
+          className="h-8 w-8 text-muted-foreground hover:bg-accent/50"
           onClick={onCancel}
         >
           <X className="h-5 w-5" />

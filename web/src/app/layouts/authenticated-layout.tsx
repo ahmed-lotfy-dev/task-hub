@@ -26,7 +26,7 @@ export function AuthenticatedLayout() {
   // Show loading spinner while checking authentication
   if (isPending || isRefetching || !hasChecked) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     )
@@ -36,9 +36,9 @@ export function AuthenticatedLayout() {
   if (!session) return null
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden">
       <PersonalSidebar />
-      <main className="flex-1 overflow-y-auto h-full px-2">
+      <main className="flex-1 overflow-y-auto h-full p-6 lg:p-8">
         <Outlet />
       </main>
     </div>
