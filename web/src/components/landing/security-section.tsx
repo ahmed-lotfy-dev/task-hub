@@ -23,7 +23,7 @@ const items = [
 
 export function SecuritySection() {
   return (
-    <section className="w-full flex flex-col gap-12">
+    <section id="security" className="w-full flex flex-col gap-12">
       <div className="text-center flex flex-col gap-4">
         <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
           Security and trust built in

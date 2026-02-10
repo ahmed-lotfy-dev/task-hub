@@ -4,7 +4,7 @@ import { PricingCard } from "./pricing-card";
 
 export function PricingSection() {
   return (
-    <section className="w-full flex flex-col gap-16">
+    <section id="pricing" className="w-full flex flex-col gap-16">
       <div className="text-center flex flex-col gap-4">
         <h2 className="text-4xl font-extrabold text-foreground tracking-tight">
           Flexible plans for teams of any size

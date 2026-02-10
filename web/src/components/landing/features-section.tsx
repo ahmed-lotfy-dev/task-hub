@@ -39,7 +39,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="w-full flex flex-col gap-16">
+    <section id="features" className="w-full flex flex-col gap-16">
       <div className="text-center flex flex-col gap-4">
         <h2 className="text-4xl font-extrabold text-foreground tracking-tight">
           Everything your team needs, nothing it does not
