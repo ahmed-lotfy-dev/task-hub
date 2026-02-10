@@ -48,14 +48,18 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
         version: "1.0.0",
       },
       authentication: async ({ request }) => {
-        const url = new URL(request.url);
-        const queryKey = url.searchParams.get("apiKey") || url.searchParams.get("token");
         const authHeader = request.headers.get("Authorization");
-
-        const apiKey = (queryKey || (authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null))?.trim();
+        const apiKey = authHeader?.startsWith("Bearer ")
+          ? authHeader.split(" ")[1]?.trim()
+          : null;
 
         if (!apiKey || apiKey === "") {
-          return { response: new Response("Unauthorized: Missing API Key (as 'apiKey' query param or Bearer token)", { status: 401 }) };
+          return {
+            response: new Response(
+              "Unauthorized: Missing API Key (use Authorization: Bearer <token>)",
+              { status: 401 },
+            ),
+          };
         }
 
         const hashedKey = await hashKey(apiKey);

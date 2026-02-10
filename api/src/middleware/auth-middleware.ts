@@ -49,8 +49,6 @@ export const betterAuth = new Elysia({ name: "better-auth" })
           const apiKey = authHeader.split(" ")[1];
           const hashedKey = await hashKey(apiKey);
 
-          console.log(`[Auth] Attempting API Key auth for token starting with th_live_${apiKey.slice(8, 14)}...`);
-
           // Find the key and joined user
           const [result] = await db
             .select({
@@ -64,7 +62,9 @@ export const betterAuth = new Elysia({ name: "better-auth" })
             .limit(1);
 
           if (result) {
-            console.log(`[Auth] Success: Authenticated as ${result.user.name} via key "${result.keyName}"`);
+            console.log(
+              `[Auth] Success: Authenticated as ${result.user.name} via key "${result.keyName}" (id: ${result.keyId})`,
+            );
 
             // Update last used at asynchronously
             db.update(apiKeys)
@@ -77,7 +77,7 @@ export const betterAuth = new Elysia({ name: "better-auth" })
               session: null,
             };
           } else {
-            console.warn(`[Auth] Failure: No matching key found for hash starting with ${hashedKey.slice(0, 10)}`);
+            console.warn(`[Auth] Failure: No matching API key found`);
           }
         }
 

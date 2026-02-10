@@ -17,9 +17,9 @@ import logixlysia from "logixlysia";
 import { betterAuth } from "./middleware/auth-middleware";
 import { mcpServer } from "./mcp";
 import llmText from "./llm.txt";
+import { securityHeaders } from "./middleware/security-headers";
 
 const app = new Elysia()
-
   .use(
     openapi({
       scalar: true,
@@ -29,11 +29,7 @@ const app = new Elysia()
   )
   .use(
     cors({
-      origin: (request) => {
-        const origin = request.headers.get("origin");
-        if (!origin) return true;
-        return true; // Reflect origin for easier debugging while staying safe
-      },
+      origin: process.env.FRONTEND_URL,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       credentials: true,
       allowedHeaders: [
@@ -47,6 +43,7 @@ const app = new Elysia()
     }),
   )
   .use(logixlysia())
+  .use(securityHeaders)
   .use(mcpServer)
   .use(betterAuth)
   .group("/api", (app) =>

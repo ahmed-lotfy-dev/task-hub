@@ -10,8 +10,8 @@ export const auth = betterAuth({
       user: users,
       session: sessions,
       account: accounts,
-      verification: verifications
-    }
+      verification: verifications,
+    },
   }),
 
   secret: process.env.BETTER_AUTH_SECRET,
@@ -39,16 +39,7 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
   },
-  trustedOrigins: [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://web.ahmedlotfy.site",
-    "https://web.ahmedlotfy.site",
-    "https://api.ahmedlotfy.site",
-    "https://ahmedlotfy.site",
-    "https://task-hub-api.ahmedlotfy.site",
-    "https://task-hub.ahmedlotfy.site",
-  ],
+  trustedOrigins: [process.env.FRONTEND_URL!],
   logger: {
     level: "debug",
   },
@@ -66,7 +57,9 @@ export const auth = betterAuth({
       enabled: false,
     },
     // Only use secure cookies if we are on HTTPS
-    useSecureCookies: process.env.BETTER_AUTH_URL?.startsWith("https://") && process.env.NODE_ENV === "production",
+    useSecureCookies:
+      process.env.BETTER_AUTH_URL?.startsWith("https://") &&
+      process.env.NODE_ENV === "production",
     trustedProxyHeaders: true,
   },
   account: {
