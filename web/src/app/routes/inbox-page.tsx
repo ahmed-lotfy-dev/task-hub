@@ -48,7 +48,7 @@ export function InboxPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto py-8 space-y-8">
+    <div className="w-full py-8 space-y-8">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

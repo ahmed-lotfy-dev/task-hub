@@ -19,7 +19,7 @@ export function SettingsPage() {
 
   return (
     <div className="flex-1 p-6 lg:p-8 bg-background">
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>

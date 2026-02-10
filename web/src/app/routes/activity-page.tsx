@@ -10,8 +10,8 @@ export function ActivityPage() {
   const { data: activities, isLoading } = useActivities();
 
   return (
-    <div className="flex-1 overflow-auto bg-zinc-50/50 p-8 sm:p-12">
-      <div className="max-w-[1400px] mx-auto space-y-8">
+    <div className="flex-1 overflow-auto bg-background p-8 sm:p-12">
+      <div className="w-full space-y-8">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/home">
@@ -20,11 +20,13 @@ export function ActivityPage() {
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
+              <h1 className="text-3xl font-black tracking-tight flex items-center gap-3 text-foreground">
                 <History className="w-8 h-8 text-primary" />
                 Team Activity History
               </h1>
-              <p className="text-muted-foreground font-medium mt-1">A comprehensive log of all actions within your workspace.</p>
+              <p className="text-muted-foreground font-medium mt-1">
+                A comprehensive log of all actions within your workspace.
+              </p>
             </div>
           </div>
         </header>
@@ -35,19 +37,19 @@ export function ActivityPage() {
             <p className="text-muted-foreground font-bold">Retrieving activity logs...</p>
           </div>
         ) : !activities || activities.length === 0 ? (
-          <Card className="p-12 flex flex-col items-center justify-center text-center bg-white/50 border-dashed">
-            <History className="w-16 h-16 text-zinc-200 mb-4" />
-            <h3 className="text-xl font-bold text-zinc-400">No Activity Recorded</h3>
-            <p className="text-sm text-zinc-300 max-w-xs mt-2">
+          <Card className="p-12 flex flex-col items-center justify-center text-center bg-card/60 border-dashed">
+            <History className="w-16 h-16 text-muted-foreground/40 mb-4" />
+            <h3 className="text-xl font-bold text-foreground/70">No Activity Recorded</h3>
+            <p className="text-sm text-muted-foreground max-w-xs mt-2">
               All future actions will be logged here for total transparency.
             </p>
           </Card>
         ) : (
-          <Card className="p-8 bg-white/80 backdrop-blur-sm shadow-xl shadow-zinc-200/50 border-white/20">
+          <Card className="p-8 bg-card/80 backdrop-blur-sm shadow-xl border-border/40">
             <div className="flex flex-col gap-8">
               {activities.map((activity) => (
                 <div key={activity.id} className="flex flex-col gap-2">
-                  <div className="text-[10px] uppercase tracking-[0.2em] font-black text-zinc-400 ml-14">
+                  <div className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground ml-14">
                     {formatDate(activity.createdAt, DATE_FORMATS.DISPLAY_WITH_TIME)}
                   </div>
                   <ActivityItem
