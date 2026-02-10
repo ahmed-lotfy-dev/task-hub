@@ -20,6 +20,20 @@ import llmText from "./llm.txt";
 import { securityHeaders } from "./middleware/security-headers";
 
 const app = new Elysia()
+  .onRequest(({ request }) => {
+    // Fix for MCP clients that don't send proper Accept headers (e.g., OpenCode)
+    // The MCP SDK requires both application/json and text/event-stream
+    // This must run BEFORE the mcpServer to patch headers before the transport checks them
+    const acceptHeader = request.headers.get("Accept");
+    if (acceptHeader && !acceptHeader.includes("text/event-stream")) {
+      const newHeaders = new Headers(request.headers);
+      newHeaders.set("Accept", `${acceptHeader}, text/event-stream`);
+      Object.defineProperty(request, "headers", {
+        value: newHeaders,
+        writable: false,
+      });
+    }
+  })
   .use(
     openapi({
       scalar: true,
