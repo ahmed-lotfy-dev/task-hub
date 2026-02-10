@@ -39,6 +39,19 @@ mcpEvents.on("task:event", async (event: TaskEvent) => {
 });
 
 export const mcpServer = new Elysia({ name: "mcp-server" })
+  .onRequest(({ request }) => {
+    // Fix for MCP clients that don't send proper Accept headers (e.g., OpenCode)
+    // The MCP SDK requires both application/json and text/event-stream
+    const acceptHeader = request.headers.get("Accept");
+    if (acceptHeader && !acceptHeader.includes("text/event-stream")) {
+      const newHeaders = new Headers(request.headers);
+      newHeaders.set("Accept", `${acceptHeader}, text/event-stream`);
+      Object.defineProperty(request, "headers", {
+        value: newHeaders,
+        writable: false,
+      });
+    }
+  })
   .use(
     mcp({
       stateless: true,
