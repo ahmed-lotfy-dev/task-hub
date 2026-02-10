@@ -12,6 +12,7 @@ import { invitationRoutes } from "./routes/invitations";
 import { commentRoutes } from "./routes/comments";
 import { notificationRoutes } from "./routes/notifications";
 import { memberRoutes } from "./routes/members";
+import { testimonialRoutes } from "./routes/testimonials";
 import logixlysia from "logixlysia";
 import { betterAuth } from "./middleware/auth-middleware";
 import { mcpServer } from "./mcp";
@@ -60,6 +61,7 @@ const app = new Elysia()
       .use(commentRoutes)
       .use(notificationRoutes)
       .use(memberRoutes)
+      .use(testimonialRoutes)
       .get("/user", ({ user }) => user, {
         auth: true,
       }),

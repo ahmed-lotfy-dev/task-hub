@@ -7,6 +7,7 @@ import { boardMembers } from './board_members';
 import { lists } from './lists';
 import { cards, cardAssignees, cardLabels, cardComments, cardAttachments, checklists, checklistItems } from './cards';
 import { boardLabels } from './boards';
+import { testimonials } from './testimonials';
 
 // WORKSPACE RELATIONS
 export const workspacesRelations = relations(workspaces, ({ many }) => ({
@@ -30,6 +31,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   workspaceMemberships: many(workspaceMembers),
   boardMemberships: many(boardMembers),
   assignedCards: many(cardAssignees),
+  testimonials: many(testimonials),
 }));
 
 // BOARD RELATIONS
@@ -148,6 +150,14 @@ export const checklistItemsRelations = relations(checklistItems, ({ one }) => ({
   }),
   assignee: one(users, {
     fields: [checklistItems.assignedTo],
+    references: [users.id],
+  }),
+}));
+
+// TESTIMONIAL RELATIONS
+export const testimonialsRelations = relations(testimonials, ({ one }) => ({
+  creator: one(users, {
+    fields: [testimonials.createdBy],
     references: [users.id],
   }),
 }));

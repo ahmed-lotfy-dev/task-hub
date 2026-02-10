@@ -3,6 +3,7 @@ import { User, Monitor, Shield, Key, Bell } from "lucide-react";
 import { APIKeyManager } from "@/components/settings/api-key-manager";
 import { cn } from "@/lib/utils";
 import { AppearanceSettings } from "@/components/settings/appearance-settings";
+import { TestimonialsManager } from "@/components/settings/testimonials-manager";
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("api");
@@ -12,6 +13,7 @@ export function SettingsPage() {
     { id: "appearance", label: "Appearance", icon: Monitor },
     { id: "security", label: "Security", icon: Shield },
     { id: "api", label: "API & MCP", icon: Key },
+    { id: "testimonials", label: "Testimonials", icon: Monitor },
     { id: "notifications", label: "Notifications", icon: Bell },
   ];
 
@@ -60,6 +62,8 @@ export function SettingsPage() {
               </div>
             ) : activeTab === "appearance" ? (
               <AppearanceSettings />
+            ) : activeTab === "testimonials" ? (
+              <TestimonialsManager />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border rounded-lg bg-muted/30">
                 <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-4">

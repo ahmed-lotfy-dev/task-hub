@@ -8,6 +8,7 @@ export * from './lists';
 export * from './cards';
 export * from './invitations';
 export * from './board_members';
+export * from './testimonials';
 
 // Better Auth schema tables
 export * from './sessions';

@@ -5,6 +5,7 @@ export * from './types/workspace';
 export * from './types/board';
 export * from './types/list';
 export * from './types/card';
+export * from './types/testimonial';
 export * from './types/api';
 
 // Schemas
@@ -13,6 +14,7 @@ export * from './schemas/workspace';
 export * from './schemas/board';
 export * from './schemas/list';
 export * from './schemas/card';
+export * from './schemas/testimonial';
 
 // Compatibility Aliases for Dialogs
 export { createWorkspaceSchema as workspaceSchema } from './schemas/workspace';
@@ -23,6 +25,7 @@ export { createCardSchema as taskSchema } from './schemas/card';
 export type { CreateWorkspaceInput as WorkspaceFormValues } from './schemas/workspace';
 export type { CreateBoardInput as BoardFormValues } from './schemas/board';
 export type { CreateCardInput as TaskFormValues } from './schemas/card';
+export type { CreateTestimonialInput, UpdateTestimonialInput } from './schemas/testimonial';
 
 // Constants
 export * from './constants/limits';
