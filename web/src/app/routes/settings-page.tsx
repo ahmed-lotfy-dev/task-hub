@@ -2,6 +2,7 @@ import { useState } from "react";
 import { User, Monitor, Shield, Key, Bell } from "lucide-react";
 import { APIKeyManager } from "@/components/settings/api-key-manager";
 import { cn } from "@/lib/utils";
+import { AppearanceSettings } from "@/components/settings/appearance-settings";
 
 export function SettingsPage() {
   const [activeTab, setActiveTab] = useState("api");
@@ -57,6 +58,8 @@ export function SettingsPage() {
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-200">
                 <APIKeyManager showInfo={false} />
               </div>
+            ) : activeTab === "appearance" ? (
+              <AppearanceSettings />
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border rounded-lg bg-muted/30">
                 <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center mb-4">
