@@ -4,6 +4,7 @@ import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { logActivity } from "../../lib/activity-logger";
 import { BoardService } from "../../services/board.service";
+import { ListService } from "../../services/list.service";
 
 export const registerBoardTools = (server: McpServer) => {
   server.registerTool(
