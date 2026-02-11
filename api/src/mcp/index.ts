@@ -2,12 +2,31 @@ import { Elysia } from "elysia";
 import { mcp, transports } from "elysia-mcp";
 import { registerAllTools } from "./tools";
 import { db } from "../db/db";
-import { apiKeys, users } from "../db/schema";
+import { apiKeys } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { hashKey } from "../lib/api-key-utils";
 import { mcpEvents, TaskEvent } from "../lib/mcp-events";
 
 const sessionUserMap = new Map<string, string>();
+
+function unauthorizedMcpResponse(message: string) {
+  return new Response(
+    JSON.stringify({
+      jsonrpc: "2.0",
+      error: {
+        code: -32001,
+        message,
+      },
+      id: null,
+    }),
+    {
+      status: 401,
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+      },
+    },
+  );
+}
 
 mcpEvents.on("task:event", async (event: TaskEvent) => {
   console.log(`[MCP] Task event received:`, event.type, event.task.id);
@@ -70,9 +89,8 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
 
         if (!apiKey || apiKey === "") {
           return {
-            response: new Response(
+            response: unauthorizedMcpResponse(
               "Unauthorized: Missing API Key (use Authorization: Bearer <token>)",
-              { status: 401 },
             ),
           };
         }
@@ -86,7 +104,9 @@ export const mcpServer = new Elysia({ name: "mcp-server" })
           .limit(1);
 
         if (!keyRecord) {
-          return { response: new Response("Unauthorized: Invalid API Key", { status: 401 }) };
+          return {
+            response: unauthorizedMcpResponse("Unauthorized: Invalid API Key"),
+          };
         }
 
         await db.update(apiKeys).set({ lastUsedAt: new Date() }).where(eq(apiKeys.key, hashedKey));
